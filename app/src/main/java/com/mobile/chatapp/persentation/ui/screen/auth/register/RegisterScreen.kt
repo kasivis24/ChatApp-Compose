@@ -32,10 +32,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.R
+import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
@@ -228,5 +231,15 @@ fun RegisterScreen(navController: NavController){
 
         }
 
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewRegister(){
+    AppTheme {
+        val navController = rememberNavController()
+        RegisterScreen(navController)
     }
 }
