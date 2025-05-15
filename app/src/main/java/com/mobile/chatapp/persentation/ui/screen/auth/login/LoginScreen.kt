@@ -32,19 +32,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.R
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
+import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
+import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 
 @Composable
 fun LoginScreen(navController: NavController){
-
-
     var email by remember { mutableStateOf("") }
 
     var password by remember { mutableStateOf("") }
@@ -55,7 +57,7 @@ fun LoginScreen(navController: NavController){
 
         Column (Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
 
-            Image(modifier = Modifier.padding(vertical = 40.dp), painter = painterResource(R.drawable.img_auth), contentDescription = "")
+            Image(modifier = Modifier.padding(vertical = 50.dp), painter = painterResource(R.drawable.img_auth), contentDescription = "")
 
             Box(Modifier.fillMaxWidth().padding(horizontal = 10.dp), contentAlignment = Alignment.CenterStart){
                 Text(
@@ -69,9 +71,9 @@ fun LoginScreen(navController: NavController){
 
             Box(Modifier.fillMaxWidth().padding(10.dp), contentAlignment = Alignment.CenterStart){
                 Text(
-                    "Enter the Gmail to Secure your sensitive Information ",
-                    fontSize = 20.sp,
-                    color = Color.Gray.copy(alpha = 0.4f),
+                    "Log in with your Gmail and password to verify your account.",
+                    fontSize = 17.sp,
+                    color = Color.Gray.copy(alpha = 0.5f),
                     style = TextStyle(
                         fontFamily = zohoMedium,
                     )
@@ -199,15 +201,14 @@ fun LoginScreen(navController: NavController){
 
                 }
 
-
                 Spacer(Modifier.height(15.dp))
 
 
-                Box(Modifier.fillMaxWidth().height(56.dp)){
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
+
+                ){
                     Button(
-                        modifier = Modifier.fillMaxSize(),onClick = {
-                            navController.navigate(AppRoutes.HOME_SCREEN)
-                        },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),onClick = {},
                         shape = RoundedCornerShape(10.dp)
                     ) {
 
@@ -224,8 +225,6 @@ fun LoginScreen(navController: NavController){
 
 
 
-
-
             }
 
 
@@ -233,5 +232,13 @@ fun LoginScreen(navController: NavController){
         }
 
     }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewLogin(){
+    AppTheme {
+        val navController = rememberNavController()
+        LoginScreen(navController)
+    }
 }

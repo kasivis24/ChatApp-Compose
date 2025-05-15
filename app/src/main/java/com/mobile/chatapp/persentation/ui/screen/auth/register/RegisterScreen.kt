@@ -56,7 +56,7 @@ fun RegisterScreen(navController: NavController){
 
         Column (Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
 
-            Image(modifier = Modifier.padding(vertical = 40.dp), painter = painterResource(R.drawable.img_auth), contentDescription = "")
+            Image(modifier = Modifier.padding(vertical = 50.dp), painter = painterResource(R.drawable.img_auth), contentDescription = "")
 
             Box(Modifier.fillMaxWidth().padding(horizontal = 10.dp), contentAlignment = Alignment.CenterStart){
                 Text(
@@ -70,9 +70,9 @@ fun RegisterScreen(navController: NavController){
 
             Box(Modifier.fillMaxWidth().padding(10.dp), contentAlignment = Alignment.CenterStart){
                 Text(
-                    "Enter the Gmail to Secure your sensitive Information ",
-                    fontSize = 20.sp,
-                    color = Color.Gray.copy(alpha = 0.4f),
+                    "Sign up with the gmail and password to secure your every sensitive info",
+                    fontSize = 17.sp,
+                    color = Color.Gray.copy(alpha = 0.5f),
                     style = TextStyle(
                         fontFamily = zohoMedium,
                     )
@@ -200,13 +200,14 @@ fun RegisterScreen(navController: NavController){
 
                 }
 
-
                 Spacer(Modifier.height(15.dp))
 
 
-                Box(Modifier.fillMaxWidth().height(56.dp)){
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
+
+                ){
                     Button(
-                        modifier = Modifier.fillMaxSize(),onClick = {},
+                        modifier = Modifier.fillMaxWidth().height(56.dp),onClick = {},
                         shape = RoundedCornerShape(10.dp)
                     ) {
 
@@ -220,8 +221,6 @@ fun RegisterScreen(navController: NavController){
 
                     }
                 }
-
-
 
 
 
