@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp
+package com.mobile.chatapp
 
 import org.junit.Test
 

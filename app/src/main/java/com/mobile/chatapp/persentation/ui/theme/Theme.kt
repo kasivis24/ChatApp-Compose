@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp.ui.theme
+package com.mobile.chatapp.persentation.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

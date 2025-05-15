@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp
+package com.mobile.chatapp
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

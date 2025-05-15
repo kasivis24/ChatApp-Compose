@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp.ui.theme.screens
+package com.mobile.chatapp.persentation.ui.screen.auth.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -36,15 +35,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.mobile.android_chatapp.R
-import com.mobile.android_chatapp.ui.theme.zohoBold
-import com.mobile.android_chatapp.ui.theme.zohoMedium
-import com.mobile.android_chatapp.ui.theme.zohoRegular
-import com.mobile.android_chatapp.ui.theme.zohoSemiBold
+import com.mobile.chatapp.R
+import com.mobile.chatapp.persentation.ui.theme.zohoBold
+import com.mobile.chatapp.persentation.ui.theme.zohoMedium
+import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 
 @Composable
-fun AuthScreen(navController: NavController){
-
+fun RegisterScreen(navController: NavController){
 
     var email by remember { mutableStateOf("") }
 
@@ -198,7 +195,6 @@ fun AuthScreen(navController: NavController){
 
                     }
 
-
                 }
 
 
@@ -212,7 +208,7 @@ fun AuthScreen(navController: NavController){
                     ) {
 
                         Text(
-                            "Login",
+                            "Register",
                             fontSize = 18.sp,
                             style = TextStyle(
                                 fontFamily = zohoMedium,

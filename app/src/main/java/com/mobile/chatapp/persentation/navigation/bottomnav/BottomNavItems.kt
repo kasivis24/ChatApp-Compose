@@ -1,5 +1,5 @@
-package com.mobile.android_chatapp.ui.theme.navigation
-import com.mobile.android_chatapp.R
+package com.mobile.chatapp.persentation.navigation.bottomnav
+import com.mobile.chatapp.R
 
 sealed class BottomNavItem(val title: String, val icon: Int, val route: String) {
     object Duo : BottomNavItem("Duo", R.drawable.baseline_chat_24, "duo")

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.mobile.android_chatapp"
+    namespace = "com.mobile.chatapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.mobile.android_chatapp"
+        applicationId = "com.mobile.chatapp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

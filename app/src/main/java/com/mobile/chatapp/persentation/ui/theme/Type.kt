@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp.ui.theme
+package com.mobile.chatapp.persentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.mobile.android_chatapp.R
+import com.mobile.chatapp.R
 
 
 val zohoBlack = FontFamily(

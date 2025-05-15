@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp.ui.theme
+package com.mobile.chatapp.persentation.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF00677C)

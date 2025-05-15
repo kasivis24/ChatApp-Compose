@@ -1,4 +1,4 @@
-package com.mobile.android_chatapp.ui.theme.screens
+package com.mobile.chatapp.persentation.ui.screen.team
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
