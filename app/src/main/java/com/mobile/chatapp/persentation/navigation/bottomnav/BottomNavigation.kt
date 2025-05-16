@@ -4,10 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
-import com.mobile.chatapp.persentation.ui.screen.Duo.DuoScreen
-import com.mobile.chatapp.persentation.ui.screen.auth.login.LoginScreen
-import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
+import com.mobile.chatapp.persentation.ui.screen.duo.DuoScreen
 import com.mobile.chatapp.persentation.ui.screen.settings.SettingsScreen
 import com.mobile.chatapp.persentation.ui.screen.team.TeamScreen
 

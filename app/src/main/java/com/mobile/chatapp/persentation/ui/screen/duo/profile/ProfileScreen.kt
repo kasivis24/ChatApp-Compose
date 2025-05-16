@@ -1,19 +1,24 @@
-package com.mobile.chatapp.persentation.ui.screen.Duo.profile
+package com.mobile.chatapp.persentation.ui.screen.duo.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,14 +30,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobile.chatapp.R
 import com.mobile.chatapp.persentation.ui.theme.zohoBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
+import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,6 +109,69 @@ fun ProfileScreen(){
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 10.dp)
                     )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.padding(top = 20.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.icon_call),
+                            contentDescription = "Call",
+                            modifier = Modifier.size(30.dp)
+                        )
+                        Image(
+                            painter = painterResource(R.drawable.icon_video),
+                            contentDescription = "Call",
+                            modifier = Modifier.size(35.dp)
+                        )
+                        Image(
+                            painter = painterResource(R.drawable.icon_mute),
+                            contentDescription = "Call",
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(R.color.card_bg)
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                            .height(160.dp)
+                            .padding(top = 20.dp)
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(18.dp)
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "phone",
+                                style = TextStyle(fontFamily = zohoRegular),
+                                color = Color.Gray,
+                                fontSize = 15.sp
+                            )
+                            Text(
+                                text = "+919876543210",
+                                style = TextStyle(fontFamily = zohoMedium),
+                                color = colorResource(R.color.card_text_color),
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                text = "name",
+                                style = TextStyle(fontFamily = zohoRegular),
+                                color = Color.Gray,
+                                fontSize = 15.sp,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                            Text(
+                                text = "@aavf_goqejp44",
+                                style = TextStyle(fontFamily = zohoMedium),
+                                color = colorResource(R.color.card_text_color),
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
                 }
             }
         }

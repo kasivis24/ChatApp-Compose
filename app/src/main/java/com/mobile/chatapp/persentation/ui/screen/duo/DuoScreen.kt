@@ -1,4 +1,4 @@
-package com.mobile.chatapp.persentation.ui.screen.Duo
+package com.mobile.chatapp.persentation.ui.screen.duo
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
