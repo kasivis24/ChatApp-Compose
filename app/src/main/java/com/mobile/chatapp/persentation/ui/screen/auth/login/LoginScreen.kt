@@ -3,28 +3,37 @@ package com.mobile.chatapp.persentation.ui.screen.auth.login
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,14 +62,17 @@ import com.mobile.chatapp.persentation.components.SnackBarError
 import com.mobile.chatapp.persentation.components.SnackBarSuccess
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
 import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
-import com.mobile.chatapp.persentation.ui.screen.auth.state.AuthUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.ForgetPasswordUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.LoginUiState
 import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoBold
+import com.mobile.chatapp.persentation.ui.theme.zohoLight
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hiltViewModel()){
@@ -69,23 +81,203 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
 
     var password by rememberSaveable { mutableStateOf("") }
 
+    var forgetPassword by rememberSaveable { mutableStateOf("") }
+
     var passwordSecure by rememberSaveable { mutableStateOf(false) }
 
-    val uiState by authViewModel.uiState.collectAsState()
+    val uiStateLogin by authViewModel.uiLoginState.collectAsState()
+
+    val uiStateForget by authViewModel.uiForgetState.collectAsState()
 
     val snackbarHostState = SnackbarHostState()
 
     val coroutineScope = rememberCoroutineScope()
 
+    val bottomSheetForForgetPassword = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false,
+    )
+
+    var forgetPasswordVisiblilty by rememberSaveable { mutableStateOf(false) }
+
+
     Scaffold (
         snackbarHost = {
-        when (uiState){
-            is AuthUiState.Success -> SnackBarSuccess(snackbarHostState)
-            is AuthUiState.Error -> SnackBarError(snackbarHostState)
+        when (uiStateLogin){
+            is LoginUiState.Success -> SnackBarSuccess(snackbarHostState)
+            is LoginUiState.Error -> SnackBarError(snackbarHostState)
             else -> Unit
         }
+
+            when (uiStateForget){
+                is ForgetPasswordUiState.Success -> SnackBarSuccess(snackbarHostState)
+                is ForgetPasswordUiState.Error -> SnackBarError(snackbarHostState)
+                else -> Unit
+            }
     }){
         Box(Modifier.fillMaxSize()){
+
+            if (forgetPasswordVisiblilty){
+                ModalBottomSheet(
+                    modifier = Modifier.fillMaxSize(),
+                    sheetState = bottomSheetForForgetPassword,
+                    onDismissRequest = { forgetPasswordVisiblilty = !forgetPasswordVisiblilty },
+                ){
+
+
+                    Box(Modifier.fillMaxWidth().padding(10.dp), contentAlignment = Alignment.Center){
+                        Text(
+                            "Forget Password",
+                            fontSize = 25.sp,
+                            style = TextStyle(
+                                fontFamily = zohoBold,
+                            ),
+                        )
+                    }
+
+
+                    Column (Modifier.padding(horizontal = 10.dp, vertical = 20.dp)){
+                        Text(
+                            "Email Address",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = zohoRegular,
+                            ),
+                        )
+
+
+
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 15.dp)
+                        ){
+
+                            OutlinedTextField(
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    fontFamily = zohoRegular
+                                ),
+                                placeholder = {
+                                    Text("guest@gmail.com",
+                                        fontSize = 13.sp,
+                                        fontFamily = zohoRegular,
+                                        color = Color.Gray.copy(alpha = 0.7f),
+                                        fontWeight = FontWeight.W500,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                value = forgetPassword,
+                                onValueChange = {
+                                    forgetPassword = it
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                singleLine = true,
+                                maxLines = 1,
+                                colors = OutlinedTextFieldDefaults.colors(
+//                            focusedContainerColor = Color.Gray.copy(alpha = 0.5f),
+                                    focusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+//                            disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
+                                    disabledBorderColor = Color.Gray.copy(alpha = 0.5f),
+//                            cursorColor = if (isDark) AppThemeColor else Color.Red,
+                                ),
+
+                                )
+
+                        }
+
+
+                    }
+
+
+                    Card (
+                        Modifier.fillMaxWidth().padding(10.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        )
+                    ){
+
+                        Row (Modifier.padding(7.dp)){
+
+                            Icon(painter = painterResource(R.drawable.baseline_info_outline_24), contentDescription = "")
+
+                            Spacer(Modifier.width(5.dp))
+
+                            Text(
+                                "Once you enter email and press the send button you will got a mail for the reset the password ",
+                                style = TextStyle(
+                                    fontSize = 10.sp,
+                                    fontFamily = zohoLight,
+                                ),
+                            )
+
+
+                        }
+
+                    }
+
+
+                    Button(
+                        modifier = Modifier.fillMaxWidth().padding(10.dp).height(56.dp),
+                        onClick = {
+                            authViewModel.forgetPassword(forgetPassword)
+                        },
+                        shape = RoundedCornerShape(10.dp)
+                    ){
+
+
+                        when (uiStateForget){
+
+                            is ForgetPasswordUiState.Idle -> Text(
+                                "Send",
+                                fontSize = 18.sp,
+                                style = TextStyle(
+                                    fontFamily = zohoMedium,
+                                )
+                            )
+                            is ForgetPasswordUiState.Loading -> CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                color = Color.White,
+                                strokeWidth = 2.5.dp,
+                            )
+
+                            is ForgetPasswordUiState.Success -> {
+                                Text(
+                                    "Send",
+                                    fontSize = 18.sp,
+                                    style = TextStyle(fontFamily = zohoMedium)
+                                )
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Reset link send to mail")
+                                    Log.d("LogAuth","Succes Gmail Login")
+                                    authViewModel.resetStateForget()
+                                }
+
+                            }
+                            is ForgetPasswordUiState.Error -> {
+
+                                Text(
+                                    "Send",
+                                    fontSize = 18.sp,
+                                    style = TextStyle(fontFamily = zohoMedium)
+                                )
+
+                                Log.d("LogAuth","Failed Gmail Login")
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Something went wrong!  Please check !!!")
+                                    authViewModel.resetStateForget()
+                                }
+                            }
+                            else -> Unit
+                        }
+
+
+                    }
+
+
+
+
+                }
+            }
 
             Column (Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
 
@@ -243,6 +435,9 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
                                 fontFamily = zohoMedium,
                                 color = MaterialTheme.colorScheme.primary
                             ),
+                            modifier = Modifier.clickable {
+                                forgetPasswordVisiblilty = !forgetPasswordVisiblilty
+                            },
                         )
 
                     }
@@ -258,20 +453,20 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
                             shape = RoundedCornerShape(10.dp)
                         ) {
 
-                            when (uiState){
-                                is AuthUiState.Idle -> Text(
+                            when (uiStateLogin){
+                                is LoginUiState.Idle -> Text(
                                     "Login",
                                     fontSize = 18.sp,
                                     style = TextStyle(
                                         fontFamily = zohoMedium,
                                     )
                                 )
-                                is AuthUiState.Loading -> CircularProgressIndicator(
+                                is LoginUiState.Loading -> CircularProgressIndicator(
                                     modifier = Modifier.size(18.dp),
                                     color = Color.White,
                                     strokeWidth = 2.5.dp,
                                 )
-                                is AuthUiState.Success -> {
+                                is LoginUiState.Success -> {
                                     Text(
                                         "Login",
                                         fontSize = 18.sp,
@@ -280,12 +475,12 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Welcome back! You’re signed in.")
                                         Log.d("LogAuth","Succes Gmail Login")
-                                        authViewModel.resetState()
+                                        authViewModel.resetStateLogin()
                                         navController.navigate(AppRoutes.HOME_SCREEN)
                                     }
 
                                 }
-                                is AuthUiState.Error -> {
+                                is LoginUiState.Error -> {
 
                                     Text(
                                         "Login",
@@ -296,7 +491,7 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
                                     Log.d("LogAuth","Failed Gmail Login")
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Something went wrong!  Please check !!!")
-                                        authViewModel.resetState()
+                                        authViewModel.resetStateLogin()
                                     }
                                 }
                                 else -> Unit

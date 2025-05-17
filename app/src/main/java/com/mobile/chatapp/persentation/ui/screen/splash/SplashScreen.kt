@@ -11,7 +11,6 @@ fun SplashScreen(navController: NavController){
 
     val auth = FirebaseAuth.getInstance()
 
-
     if (auth.currentUser != null){
         navController.navigate(AppRoutes.HOME_SCREEN) {
             popUpTo(AppRoutes.SPLASH_SCREEN) { inclusive = true }

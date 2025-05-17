@@ -54,7 +54,7 @@ import com.mobile.chatapp.R
 import com.mobile.chatapp.persentation.components.SnackBarError
 import com.mobile.chatapp.persentation.components.SnackBarSuccess
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
-import com.mobile.chatapp.persentation.ui.screen.auth.state.AuthUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.RegisterUiState
 import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoBold
@@ -72,7 +72,7 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
 
     var passwordSecure by rememberSaveable { mutableStateOf(false) }
 
-    val uiState by authViewModel.uiState.collectAsState()
+    val uiState by authViewModel.uiRegisterState.collectAsState()
 
     val snackbarHostState = SnackbarHostState()
 
@@ -81,8 +81,8 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
     Scaffold (
         snackbarHost = {
             when (uiState){
-                is AuthUiState.Success -> SnackBarSuccess(snackbarHostState)
-                is AuthUiState.Error -> SnackBarError(snackbarHostState)
+                is RegisterUiState.Success -> SnackBarSuccess(snackbarHostState)
+                is RegisterUiState.Error -> SnackBarError(snackbarHostState)
                 else -> Unit
             }
         }
@@ -281,19 +281,19 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                         ) {
 
                             when (uiState){
-                                is AuthUiState.Idle -> Text(
+                                is RegisterUiState.Idle -> Text(
                                     "Register",
                                     fontSize = 18.sp,
                                     style = TextStyle(
                                         fontFamily = zohoMedium,
                                     )
                                 )
-                                is AuthUiState.Loading -> CircularProgressIndicator(
+                                is RegisterUiState.Loading -> CircularProgressIndicator(
                                     modifier = Modifier.size(18.dp),
                                     color = Color.White,
                                     strokeWidth = 2.5.dp,
                                 )
-                                is AuthUiState.Success -> {
+                                is RegisterUiState.Success -> {
                                     Text(
                                         "Register",
                                         fontSize = 18.sp,
@@ -304,12 +304,12 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Welcome back! You’re signed in.")
                                         Log.d("LogAuth","Succes Gmail Login")
-                                        authViewModel.resetState()
+                                        authViewModel.resetStateRegister()
                                         navController.navigate(AppRoutes.HOME_SCREEN)
                                     }
 
                                 }
-                                is AuthUiState.Error -> {
+                                is RegisterUiState.Error -> {
 
                                     Text(
                                         "Register",
@@ -320,7 +320,7 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                                     Log.d("LogAuth","Failed Gmail Login")
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Something went wrong!  Please check !!!")
-                                        authViewModel.resetState()
+                                        authViewModel.resetStateRegister()
                                     }
                                 }
                                 else -> Unit

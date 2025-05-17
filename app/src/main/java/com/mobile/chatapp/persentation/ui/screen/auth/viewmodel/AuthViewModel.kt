@@ -7,7 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.chatapp.persentation.ui.screen.auth.repo.AuthRepository
-import com.mobile.chatapp.persentation.ui.screen.auth.state.AuthUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.ForgetPasswordUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.LoginUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.RegisterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,24 +21,46 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
-    val uiState: StateFlow<AuthUiState> = _uiState
+    private val _uiRegisterState = MutableStateFlow<RegisterUiState>(RegisterUiState.Idle)
+    val uiRegisterState: StateFlow<RegisterUiState> = _uiRegisterState
+
+
+    private val _uiLoginState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
+    val uiLoginState: StateFlow<LoginUiState> = _uiLoginState
+
+    private val _uiForgetState = MutableStateFlow<ForgetPasswordUiState>(ForgetPasswordUiState.Idle)
+    val uiForgetState: StateFlow<ForgetPasswordUiState> = _uiForgetState
 
     fun signUp(email : String,password : String) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-            _uiState.value = authRepository.signUp(email,password)
+            _uiRegisterState.value = RegisterUiState.Loading
+            _uiRegisterState.value = authRepository.signUp(email,password)
         }
     }
 
     fun logIn(email: String,password: String) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-            _uiState.value = authRepository.logIn(email, password)
+            _uiLoginState.value = LoginUiState.Loading
+            _uiLoginState.value = authRepository.logIn(email, password)
         }
     }
 
-    fun resetState() {
-        _uiState.value = AuthUiState.Idle
+    fun forgetPassword(email: String){
+        viewModelScope.launch {
+            _uiForgetState.value = ForgetPasswordUiState.Loading
+            _uiForgetState.value = authRepository.forgetPassword(email)
+        }
+    }
+
+    fun resetStateRegister() {
+        _uiRegisterState.value = RegisterUiState.Idle
+    }
+
+    fun resetStateLogin() {
+        _uiLoginState.value = LoginUiState.Idle
+    }
+
+    fun resetStateForget() {
+        _uiForgetState.value = ForgetPasswordUiState.Idle
     }
 }

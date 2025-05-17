@@ -1,28 +1,41 @@
 package com.mobile.chatapp.persentation.ui.screen.auth.repo
 
 import com.google.firebase.auth.FirebaseAuth
-import com.mobile.chatapp.persentation.ui.screen.auth.state.AuthUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.ForgetPasswordUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.LoginUiState
+import com.mobile.chatapp.persentation.ui.screen.auth.state.RegisterUiState
 import kotlinx.coroutines.tasks.await
 
 class GmailAuthRepository : AuthRepository {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    override suspend fun signUp(email: String, password: String): AuthUiState {
+
+    override suspend fun signUp(email: String, password: String): RegisterUiState {
+
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            AuthUiState.Success(result.user?.uid ?: "Unknown UID")
+            RegisterUiState.Success(result.user?.uid ?: "Unknown UID")
         } catch (e: Exception) {
-            AuthUiState.Error(e.localizedMessage ?: "Signup failed")
+            RegisterUiState.Error(e.localizedMessage ?: "Signup failed")
         }
     }
 
-    override suspend fun logIn(email: String, password: String): AuthUiState {
+    override suspend fun logIn(email: String, password: String): LoginUiState {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
-            AuthUiState.Success(result.user?.uid ?: "Unknown UID")
+            LoginUiState.Success(result.user?.uid ?: "Unknown UID")
         } catch (e: Exception) {
-            AuthUiState.Error(e.localizedMessage ?: "Signup failed")
+            LoginUiState.Error(e.localizedMessage ?: "Signup failed")
+        }
+    }
+
+    override suspend fun forgetPassword(email: String): ForgetPasswordUiState {
+        return try {
+            val result = auth.sendPasswordResetEmail(email).await()
+            ForgetPasswordUiState.Success( "Unknown UID")
+        } catch (e: Exception) {
+            ForgetPasswordUiState.Error(e.localizedMessage ?: "Send failed")
         }
     }
 }
