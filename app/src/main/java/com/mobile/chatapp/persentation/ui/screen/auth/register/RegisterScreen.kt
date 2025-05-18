@@ -304,8 +304,8 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Welcome back! You’re signed in.")
                                         Log.d("LogAuth","Succes Gmail Login")
-                                        authViewModel.resetStateRegister()
                                         navController.navigate(AppRoutes.HOME_SCREEN)
+                                        authViewModel.resetStateRegister()
                                     }
 
                                 }

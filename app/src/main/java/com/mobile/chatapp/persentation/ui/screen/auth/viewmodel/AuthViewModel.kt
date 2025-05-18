@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.persentation.ui.screen.auth.repo.AuthRepository
 import com.mobile.chatapp.persentation.ui.screen.auth.state.ForgetPasswordUiState
 import com.mobile.chatapp.persentation.ui.screen.auth.state.LoginUiState

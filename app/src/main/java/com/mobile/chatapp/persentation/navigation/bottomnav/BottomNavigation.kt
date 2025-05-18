@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.mobile.chatapp.persentation.ui.screen.duo.DuoScreen
+import com.mobile.chatapp.persentation.ui.screen.notify.NotifyScreen
 import com.mobile.chatapp.persentation.ui.screen.settings.SettingsScreen
 import com.mobile.chatapp.persentation.ui.screen.team.TeamScreen
 
@@ -21,6 +22,10 @@ fun BottomNavigation(navHostController: NavHostController){
 
         composable(BottomNavItem.Settings.route) {
             SettingsScreen(navHostController)
+        }
+
+        composable(BottomNavItem.Notify.route) {
+            NotifyScreen(navHostController)
         }
     }
 }

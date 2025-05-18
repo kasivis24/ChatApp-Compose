@@ -249,6 +249,7 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
                                 coroutineScope.launch {
                                     snackbarHostState.showSnackbar("Reset link send to mail")
                                     Log.d("LogAuth","Succes Gmail Login")
+                                    forgetPasswordVisiblilty = !forgetPasswordVisiblilty
                                     authViewModel.resetStateForget()
                                 }
 
@@ -475,8 +476,9 @@ fun LoginScreen(navController: NavController,authViewModel: AuthViewModel = hilt
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Welcome back! You’re signed in.")
                                         Log.d("LogAuth","Succes Gmail Login")
-                                        authViewModel.resetStateLogin()
                                         navController.navigate(AppRoutes.HOME_SCREEN)
+                                        authViewModel.resetStateLogin()
+
                                     }
 
                                 }

@@ -42,7 +42,8 @@ fun BottomNavBar(navController: NavController){
     val items = listOf(
         BottomNavItem.Duo,
         BottomNavItem.Team,
-        BottomNavItem.Settings
+        BottomNavItem.Notify,
+        BottomNavItem.Settings,
     )
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination
 
