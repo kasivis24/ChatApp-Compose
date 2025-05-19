@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 fun SnackBarSuccess(snackbarHostState: SnackbarHostState) {
 
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter){
+    Box(Modifier.fillMaxSize()
+        .padding(top = 15.dp), contentAlignment = Alignment.TopCenter){
         SnackbarHost(hostState = snackbarHostState,Modifier.padding(top = 15.dp)) { data ->
             androidx.compose.material3.Snackbar(
                 snackbarData = data,
@@ -31,7 +32,8 @@ fun SnackBarSuccess(snackbarHostState: SnackbarHostState) {
 fun SnackBarError(snackbarHostState: SnackbarHostState) {
 
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter){
+    Box(Modifier.fillMaxSize()
+        .padding(top = 15.dp), contentAlignment = Alignment.TopCenter){
         SnackbarHost(hostState = snackbarHostState,Modifier.padding(top = 15.dp)) { data ->
             androidx.compose.material3.Snackbar(
                 snackbarData = data,

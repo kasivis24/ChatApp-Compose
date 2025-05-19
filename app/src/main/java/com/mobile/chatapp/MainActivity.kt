@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.persentation.navigation.appnav.AppNavigation
+import com.mobile.chatapp.persentation.ui.screen.home.CollapsingTopAppBarScreen
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
 import dagger.hilt.EntryPoint
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     AppNavigation(navController)
+//                    CollapsingTopAppBarScreen()
                 }
             }
         }
@@ -41,6 +43,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     AppTheme {
-
+        CollapsingTopAppBarScreen()
     }
 }
