@@ -7,13 +7,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -63,21 +71,40 @@ val mediaItems = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(){
+fun ProfileScreen() {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val lazyListState = rememberLazyListState()
+
+    val collapsedFraction = scrollBehavior.state.collapsedFraction
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
+                scrollBehavior = scrollBehavior,
                 modifier = Modifier.padding(10.dp),
                 title = {
-                    Text(
-                        text = "Saved Name",
-                        fontSize = 18.sp,
-                        style = TextStyle(fontFamily = zohoBold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(start = 30.dp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (collapsedFraction > 0f) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.icon_profile),
+                                contentDescription = "Profile Small",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                                    .clip(CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "UserName", fontSize = 18.sp,
+                                style = TextStyle(fontFamily = zohoBold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(start = 30.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { /*TODO*/ }) {
@@ -88,50 +115,62 @@ fun ProfileScreen(){
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.icon_menu),
-                            contentDescription = "Menu",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.icon_menu),
+//                            contentDescription = "Menu",
+//                            tint = MaterialTheme.colorScheme.onSurface,
+//                            modifier = Modifier.size(30.dp)
+//                        )
+//                    }
                 }
 
             )
         },
-        content = {
-            Box(
+        content = { padding ->
+            LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it)
-                ,
-                contentAlignment = Alignment.TopCenter
-            ){
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.icon_profile),
-                        contentDescription = "Profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(120.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
-                            .clip(CircleShape)
-                    )
-                    Text(
-                        text = "User Name",
-                        fontSize = 16.sp,
-                        style = TextStyle(fontFamily = zohoMedium),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 10.dp)
-                    )
+                    .padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    if (collapsedFraction == 0f) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.icon_profile),
+                                contentDescription = "Profile",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                                    .clip(CircleShape)
+                            )
+                            Text(
+                                text = "User Name",
+                                fontSize = 16.sp,
+                                style = TextStyle(fontFamily = zohoMedium),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                        }
+                    }
+                }
+
+                item {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.padding(top = 20.dp)
+                        modifier = Modifier
+                            .padding(top = 20.dp)
                             .fillMaxWidth()
                     ) {
                         Icon(
@@ -153,18 +192,22 @@ fun ProfileScreen(){
                             modifier = Modifier.size(30.dp)
                         )
                     }
+                }
+                item {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .height(160.dp)
                             .padding(top = 20.dp)
                             .padding(horizontal = 20.dp),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(18.dp)
+                            modifier = Modifier
+                                .padding(18.dp)
                                 .fillMaxSize(),
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -195,58 +238,66 @@ fun ProfileScreen(){
                             )
                         }
                     }
+                }
+                item {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(top = 20.dp)
                             .padding(horizontal = 20.dp),
                         shape = RoundedCornerShape(16.dp)
-                    ){
-                        LazyVerticalGrid(
-                            columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
-                            modifier = Modifier.padding(20.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalArrangement = Arrangement.Center,
-                            userScrollEnabled = false
-                        ) {
-                            items(mediaItems){
-                                Row(
-                                    modifier = Modifier
-                                        .padding(5.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
 
-                                ){
-                                    Icon(
-                                        painter = painterResource(id = it.icon),
-                                        contentDescription = it.name,
-                                        modifier = Modifier.size(22.dp),
-                                        tint = colorResource(R.color.card_text_color)
-                                    )
-                                    Text(
-                                        text = it.name,
-                                        style = TextStyle(fontFamily = zohoMedium),
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        fontSize = 18.sp
-                                    )
-                                }
+                            LazyVerticalGrid(
+                                columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
+                                modifier = Modifier.padding(20.dp)
+                                    .heightIn(max = 250.dp),
+//                                horizontalArrangement = Arrangement.Center,
+//                                verticalArrangement = Arrangement.Center,
+                                userScrollEnabled = false
+                            ) {
+                                items(mediaItems) {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = it.icon),
+                                            contentDescription = it.name,
+                                            modifier = Modifier.size(22.dp),
+                                            tint = colorResource(R.color.card_text_color)
+                                        )
+                                        Text(
+                                            text = it.name,
+                                            style = TextStyle(fontFamily = zohoMedium),
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                            fontSize = 18.sp
+                                        )
+                                    }
+
                             }
                         }
                     }
+                }
+                item {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(top = 20.dp)
                             .padding(horizontal = 20.dp),
                         shape = RoundedCornerShape(16.dp)
-                    ){
+                    ) {
                         Column(
-                            modifier = Modifier.padding(18.dp)
-                                .fillMaxSize(),
+                            modifier = Modifier.padding(18.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
                             Row(
@@ -255,15 +306,15 @@ fun ProfileScreen(){
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
 
-                            ){
+                            ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_team),
-                                    contentDescription = "Groups",
+                                    contentDescription = "scheduled",
                                     modifier = Modifier.size(22.dp),
                                     tint = colorResource(R.color.card_text_color)
                                 )
                                 Text(
-                                    text = "Groups",
+                                    text = "Show scheduled Messages",
                                     style = TextStyle(fontFamily = zohoMedium),
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                                     fontSize = 18.sp
@@ -275,7 +326,7 @@ fun ProfileScreen(){
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
 
-                            ){
+                            ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_pin),
                                     contentDescription = "Groups",
@@ -289,6 +340,84 @@ fun ProfileScreen(){
                                     fontSize = 18.sp
                                 )
                             }
+                            Row(
+                                modifier = Modifier
+                                    .padding(5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_pin),
+                                    contentDescription = "Starred Messages",
+                                    modifier = Modifier.size(22.dp),
+                                    tint = colorResource(R.color.card_text_color)
+                                )
+                                Text(
+                                    text = "Starred Messages",
+                                    style = TextStyle(fontFamily = zohoMedium),
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontSize = 18.sp
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp)
+                            .padding(horizontal = 20.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(18.dp),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_file),
+                                    contentDescription = "clear chat",
+                                    modifier = Modifier.size(22.dp),
+                                    tint = colorResource(R.color.card_text_color)
+                                )
+                                Text(
+                                    text = "Clear Chat",
+                                    style = TextStyle(fontFamily = zohoMedium),
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontSize = 18.sp
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .padding(5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_file),
+                                    contentDescription = "Block",
+                                    modifier = Modifier.size(22.dp),
+                                    tint = Color.Red
+                                )
+                                Text(
+                                    text = "Block",
+                                    style = TextStyle(fontFamily = zohoMedium),
+                                    color = Color.Red,
+                                    fontSize = 18.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -299,7 +428,7 @@ fun ProfileScreen(){
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreviewLight(){
+fun ProfileScreenPreviewLight() {
     AppTheme {
         ProfileScreen()
     }
@@ -307,7 +436,7 @@ fun ProfileScreenPreviewLight(){
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ProfileScreenPreviewDark(){
+fun ProfileScreenPreviewDark() {
     AppTheme {
         ProfileScreen()
     }
