@@ -1,6 +1,7 @@
 package com.mobile.chatapp.persentation.ui.screen.duo
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mobile.chatapp.R
+import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
 import com.mobile.chatapp.persentation.ui.theme.zohoExtraBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
@@ -80,9 +83,13 @@ fun DuoScreen(navController: NavController){
             LazyColumn (Modifier.fillMaxSize().padding(it)){
                 item {
 
+
                     Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
                         .height(45.dp)
-                        .background(color = Color.Gray.copy(alpha = 0.1f), shape = RoundedCornerShape(20.dp)),
+                        .background(color = Color.Gray.copy(alpha = 0.1f), shape = RoundedCornerShape(20.dp))
+                        .clickable {
+                            navController.navigate(AppRoutes.SEARCH_SCREEN)
+                        },
                         contentAlignment = Alignment.CenterStart,
                     ){
                         Row (Modifier.fillMaxWidth().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically){

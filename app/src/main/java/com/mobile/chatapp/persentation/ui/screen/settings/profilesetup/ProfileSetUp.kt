@@ -254,9 +254,9 @@ fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settin
                                 )
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            value = name,
+                            value = gmail,
                             onValueChange = {
-                                name = it
+
                             },
                             shape = RoundedCornerShape(10.dp),
                             singleLine = true,

@@ -13,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
@@ -26,21 +27,21 @@ import com.mobile.chatapp.persentation.ui.theme.zohoBold
 @Composable
 fun HomeScreen(navController: NavController){
 
-    val navController = rememberNavController()
+
+    val navControllerBottomNav = rememberNavController();
 
     Scaffold(
         bottomBar = {
-            BottomNavBar(navController)
+            BottomNavBar(navControllerBottomNav)
         }
     ) {
-        BottomNavigation(navController)
+        BottomNavigation(navControllerBottomNav,navController)
     }
 }
 
 @Composable
 fun BottomNavBar(navController: NavController){
     val items = listOf(
-
         BottomNavItem.Duo,
         BottomNavItem.Team,
         BottomNavItem.Notify,
