@@ -23,7 +23,7 @@ class GmailAuthRepository : AuthRepository {
 
             database.addUser(UserData(result.user?.uid ?: "Unknown UID",email))
 
-            RegisterUiState.Success(result.user?.uid ?: "Unknown UID")
+            RegisterUiState.Success(result.user?.uid ?: "Unknown UID",)
         } catch (e: Exception) {
             RegisterUiState.Error(e.localizedMessage ?: "Signup failed")
         }

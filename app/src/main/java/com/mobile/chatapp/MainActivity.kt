@@ -16,6 +16,7 @@ import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreen
 import com.mobile.chatapp.persentation.ui.screen.home.CollapsingTopAppBarScreen
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
+import com.mobile.chatapp.persentation.ui.screen.profilesetup.ProfileSetUp
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,12 +28,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 
-
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-//                    val navController = rememberNavController()
-//                    AppNavigation(navController)
-                    ProfileScreen()
+                    val navController = rememberNavController()
+                    AppNavigation(navController)
+//                    ProfileScreen()
+//                    ProfileSetUp()
                 }
             }
         }

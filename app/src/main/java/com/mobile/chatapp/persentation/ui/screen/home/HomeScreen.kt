@@ -40,6 +40,7 @@ fun HomeScreen(navController: NavController){
 @Composable
 fun BottomNavBar(navController: NavController){
     val items = listOf(
+
         BottomNavItem.Duo,
         BottomNavItem.Team,
         BottomNavItem.Notify,

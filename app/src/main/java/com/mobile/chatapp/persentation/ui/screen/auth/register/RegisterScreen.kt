@@ -280,7 +280,7 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                             shape = RoundedCornerShape(10.dp),
                         ) {
 
-                            when (uiState){
+                            when (val state = uiState){
                                 is RegisterUiState.Idle -> Text(
                                     "Register",
                                     fontSize = 18.sp,
@@ -304,7 +304,8 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("Welcome back! You’re signed in.")
                                         Log.d("LogAuth","Succes Gmail Login")
-                                        navController.navigate(AppRoutes.HOME_SCREEN)
+//                                        navController.navigate(AppRoutes.HOME_SCREEN)
+                                        navController.navigate("${AppRoutes.PROFILESETUP_SCREEN}/$email/${state.userId}")
                                         authViewModel.resetStateRegister()
                                     }
 
