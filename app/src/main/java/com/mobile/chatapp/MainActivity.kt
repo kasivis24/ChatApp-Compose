@@ -30,9 +30,9 @@ class MainActivity : ComponentActivity() {
 
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    val navController = rememberNavController()
-                    AppNavigation(navController)
-//                    ProfileScreen()
+//                    val navController = rememberNavController()
+//                    AppNavigation(navController)
+                    ProfileScreen()
 //                    ProfileSetUp()
                 }
             }
