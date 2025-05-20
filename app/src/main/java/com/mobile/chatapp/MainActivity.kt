@@ -16,7 +16,7 @@ import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreen
 import com.mobile.chatapp.persentation.ui.screen.home.CollapsingTopAppBarScreen
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
-import com.mobile.chatapp.persentation.ui.screen.profilesetup.ProfileSetUp
+import com.mobile.chatapp.persentation.ui.screen.settings.profilesetup.ProfileSetUp
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 

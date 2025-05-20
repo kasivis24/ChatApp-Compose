@@ -1,4 +1,4 @@
-package com.mobile.chatapp.persentation.ui.screen.profilesetup
+package com.mobile.chatapp.persentation.ui.screen.settings.profilesetup
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration

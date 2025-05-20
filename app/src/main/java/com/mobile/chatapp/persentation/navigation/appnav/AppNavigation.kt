@@ -8,7 +8,7 @@ import androidx.navigation.navArgument
 import com.mobile.chatapp.persentation.ui.screen.auth.login.LoginScreen
 import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
-import com.mobile.chatapp.persentation.ui.screen.profilesetup.ProfileSetUp
+import com.mobile.chatapp.persentation.ui.screen.settings.profilesetup.ProfileSetUp
 import com.mobile.chatapp.persentation.ui.screen.splash.SplashScreen
 
 @Composable
