@@ -63,6 +63,8 @@ import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
@@ -71,6 +73,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import com.mobile.chatapp.persentation.ui.theme.zohoLight
+import com.mobile.chatapp.persentation.ui.theme.zohoSemiBold
 
 data class MediaItem(val name: String, val icon: Int)
 
@@ -85,9 +89,18 @@ val mediaItems = listOf(
 data class ScheduledMessage(val message: String, val date: String, val time: String)
 
 val scheduledMessages = listOf(
-    ScheduledMessage("Hello", "15-05-2025", "12:00 AM"),
-    ScheduledMessage("Hey, Gwen!", "26-05-2026", "01:30 PM"),
-    ScheduledMessage("Miss You 3000", "25-05-2025", "04:00 PM")
+    ScheduledMessage("You: Hello", "15-05-2025", "12:00 AM"),
+    ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
+    ScheduledMessage(
+        "You: Miss You 3000. When We meet again," +
+                " I'll tell you how much I missed you..", "25-05-2025", "04:00 PM"
+    ),
+    ScheduledMessage("You: Waiting for you !", "13-05-2026", "01:30 PM"),
+    ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
+    ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
+    ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
+    ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
+    ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
 )
 
 
@@ -157,36 +170,15 @@ fun ProfileScreen() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(10.dp),
+                                contentAlignment = Alignment.Center,
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth()
-                                        .padding(horizontal = 10.dp),
-                                ) {
-                                    Text(
-                                        text = "Message",
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.4f),
-                                        fontSize = 20.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = TextStyle(fontFamily = zohoBold)
-                                    )
-                                    Text(
-                                        text = "Date",
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.3f),
-                                        fontSize = 20.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = TextStyle(fontFamily = zohoBold)
-                                    )
-                                    Text(
-                                        text = "Time",
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.3f),
-                                        fontSize = 20.sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = TextStyle(fontFamily = zohoBold)
-                                    )
-                                }
+                                Text(
+                                    text = "Scheduled Messages",
+                                    fontSize = 22.sp,
+                                    color = colorResource(R.color.card_text_color),
+                                    style = TextStyle(fontFamily = zohoSemiBold)
+                                )
                             }
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
@@ -196,41 +188,49 @@ fun ProfileScreen() {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(10.dp),
+                                            .padding(15.dp)
+                                            .padding(horizontal = 20.dp),
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
                                             text = it.message,
                                             modifier = Modifier
-                                                .weight(0.4f)
-                                                .padding(start = 20.dp),
-                                            maxLines = 2,
+                                                .weight(0.7f),
+                                            maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                             fontSize = 16.sp,
                                             color = MaterialTheme.colorScheme.onSurface,
                                             style = TextStyle(fontFamily = zohoMedium)
 
                                         )
-
-                                        Text(
-                                            text = it.date,
-                                            textAlign = TextAlign.Center,
+                                        Column(
                                             modifier = Modifier.weight(0.3f),
-                                            fontSize = 16.sp,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            style = TextStyle(fontFamily = zohoMedium)
-                                        )
-
-                                        Text(
-                                            text = it.time,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.weight(0.3f),
-                                            fontSize = 16.sp,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            style = TextStyle(fontFamily = zohoMedium)
-                                        )
+                                            horizontalAlignment = Alignment.End
+                                        ) {
+                                            Text(
+                                                text = it.date,
+                                                fontSize = 14.sp,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                style = TextStyle(fontFamily = zohoLight)
+                                            )
+                                            Text(
+                                                text = it.time,
+                                                textAlign = TextAlign.Center,
+                                                fontSize = 14.sp,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                style = TextStyle(fontFamily = zohoLight)
+                                            )
+                                        }
                                     }
+                                    HorizontalDivider(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                            alpha = 0.5f
+                                        ),
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(horizontal = 20.dp),
+
+                                        )
                                 }
 
                             }
@@ -460,7 +460,7 @@ fun ProfileScreen() {
                                         tint = colorResource(R.color.card_text_color)
                                     )
                                     Text(
-                                        text = "Show scheduled Messages",
+                                        text = "Scheduled Messages",
                                         style = TextStyle(fontFamily = zohoMedium),
                                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                                         fontSize = 18.sp
@@ -555,12 +555,12 @@ fun ProfileScreen() {
                                         painter = painterResource(id = R.drawable.icon_block),
                                         contentDescription = "Block",
                                         modifier = Modifier.size(22.dp),
-                                        tint = Color.Red
+                                        tint = MaterialTheme.colorScheme.error
                                     )
                                     Text(
                                         text = "Block",
                                         style = TextStyle(fontFamily = zohoMedium),
-                                        color = Color.Red,
+                                        color = MaterialTheme.colorScheme.error,
                                         fontSize = 18.sp
                                     )
                                 }
