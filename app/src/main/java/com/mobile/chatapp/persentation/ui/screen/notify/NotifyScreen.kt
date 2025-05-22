@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -166,7 +167,9 @@ fun NotifyScreen(navController: NavController) {
 fun DuoRequest(){
     Box(Modifier.fillMaxSize()){
         LazyColumn (Modifier.fillMaxSize()){
-
+            items(20){
+                RequestCard()
+            }
         }
     }
 }
@@ -178,6 +181,8 @@ fun TeamRequest(){
 
     }
 }
+
+
 @Composable
 fun RequestCard() {
     Card(
@@ -270,9 +275,9 @@ fun RequestCard() {
 @Composable
 fun RequestCardPreview() {
     AppTheme {
-//        val navController = rememberNavController()
-//        NotifyScreen(navController)
-        RequestCard()
+        val navController = rememberNavController()
+        NotifyScreen(navController)
+//        RequestCard()
     }
 }
 
@@ -280,8 +285,8 @@ fun RequestCardPreview() {
 @Composable
 fun RequestCardPreviewDark() {
     AppTheme {
-//        val navController = rememberNavController()
-//        NotifyScreen(navController)
-        RequestCard()
+        val navController = rememberNavController()
+        NotifyScreen(navController)
+//        RequestCard()
     }
 }
