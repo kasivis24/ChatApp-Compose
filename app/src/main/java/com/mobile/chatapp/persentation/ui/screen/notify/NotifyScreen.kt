@@ -167,7 +167,7 @@ fun NotifyScreen(navController: NavController) {
 fun DuoRequest(){
     Box(Modifier.fillMaxSize()){
         LazyColumn (Modifier.fillMaxSize()){
-            items(20){
+            items(2){
                 RequestCard()
             }
         }
