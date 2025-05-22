@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,6 +39,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,20 +59,42 @@ import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mobile.chatapp.R
 import com.mobile.chatapp.data.dto.ProfileData
+import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel = hiltViewModel()){
+fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel()){
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
     val searchedProfileDataList by searchViewModel.searchProfileList.collectAsState()
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
+
+    val progress by animateLottieCompositionAsState(composition)
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val zoneId = TimeZone.getTimeZone("Asia/Kolkata").toZoneId()
+    val currentTime = rememberSaveable { ZonedDateTime.now(zoneId) }
+
+    val day = currentTime.format(DateTimeFormatter.ofPattern("EEEE")) // e.g., Monday
+    val date = currentTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) // e.g., 22 May 2025
+    val time = currentTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
 
     Scaffold {
         Box(Modifier.fillMaxSize().padding(it)){
@@ -119,7 +144,7 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
                             }
                         },
                         onValueChange = {
-                            searchViewModel.searchProfile(it)
+                            searchViewModel.searchProfile(it,authViewModel.getAuthToken())
                             searchQuery = it
                         },
                         shape = RoundedCornerShape(13.dp),
@@ -137,17 +162,20 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
                     LazyColumn (Modifier.fillMaxSize()){
 
                         items(searchedProfileDataList){profileData ->
-                            ProfileItem(profileData)
+                            ProfileItem(profileData, onClick = {receiverId ->
+                                coroutineScope.launch {
+                                    searchViewModel.sendFollowRequest(authViewModel.getAuthToken(),receiverId,day, date, time)
+                                }
+                            })
                         }
 
                     }
                 }else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                        Text("Please put your Query to Find the Profile",
-                            fontFamily = zohoMedium,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            textAlign = TextAlign.Center,
+                        LottieAnimation(
+                            composition = composition,
+                            progress = { progress },
+                            modifier = Modifier.size(250.dp)
                         )
                     }
                 }
@@ -161,7 +189,8 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
 
 
 @Composable
-fun ProfileItem(profileData: ProfileData){
+fun ProfileItem(profileData: ProfileData,onClick: (String)-> Unit){
+
 
     Box (Modifier.fillMaxWidth().height(75.dp).padding(bottom = 10.dp, start = 10.dp),){
 
@@ -171,8 +200,6 @@ fun ProfileItem(profileData: ProfileData){
                 .clip(CircleShape)
                 .background(color = MaterialTheme.colorScheme.onSurface)
                 ){
-
-
 
             }
 
@@ -204,7 +231,9 @@ fun ProfileItem(profileData: ProfileData){
 
 
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        onClick(profileData.userId)
+                    }) {
                         Icon(painter = painterResource(R.drawable.baseline_add_circle_outline_24), contentDescription = "Add")
                     }
                 }

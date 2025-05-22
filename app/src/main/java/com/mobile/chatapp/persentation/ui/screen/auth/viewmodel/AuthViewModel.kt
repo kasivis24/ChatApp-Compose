@@ -52,6 +52,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun getAuthToken() : String{
+        return authRepository.getAuthToken();
+    }
+
     fun resetStateRegister() {
         _uiRegisterState.value = RegisterUiState.Idle
     }

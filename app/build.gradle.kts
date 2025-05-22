@@ -87,5 +87,11 @@ dependencies {
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+
+    implementation ("com.airbnb.android:lottie-compose:6.4.0")
+
+    implementation("com.google.accompanist:accompanist-pager:0.34.0")
+
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0")
     
 }

@@ -9,4 +9,5 @@ interface AuthRepository {
     suspend fun signUp(email: String, password: String): RegisterUiState
     suspend fun logIn(email: String, password: String): LoginUiState
     suspend fun forgetPassword(email: String): ForgetPasswordUiState
+    fun getAuthToken(): String
 }

@@ -3,6 +3,7 @@ package com.mobile.chatapp.data.remote.repo
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mobile.chatapp.data.dto.ProfileData
+import com.mobile.chatapp.data.dto.RequestData
 import com.mobile.chatapp.data.dto.UserData
 import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.data.remote.state.DbEventState
@@ -39,12 +40,14 @@ class FirebaseFireStoreRepository : Database {
         }
     }
 
-    override suspend fun searchProfile(searchQuery: String): StateFlow<List<ProfileData>> {
+    override suspend fun searchProfile(searchQuery: String,uId : String): StateFlow<List<ProfileData>> {
         val _profilesFlow = MutableStateFlow<List<ProfileData>>(emptyList())
 
         try {
-            val snapshot = FirebaseFirestore.getInstance()
+
+            val snapshot = firebaseFireStore
                 .collection("profileData")
+                .whereNotEqualTo("userId",uId)
                 .get()
                 .await()
 
@@ -62,6 +65,19 @@ class FirebaseFireStoreRepository : Database {
         }
 
         return _profilesFlow.asStateFlow()
+    }
+
+    override suspend fun sendRequest(senderId : String,receiverId : String,day : String,date : String,time : String): DbEventState {
+
+        return try {
+            val ref = firebaseFireStore.collection("requestData").document()
+            val id = ref.id
+            ref.set(RequestData(id,senderId,receiverId,day, date, time)).await()
+            DbEventState.Success("Request Send Success")
+        }
+        catch (e : Exception){
+            DbEventState.Error("Something went wrong")
+        }
     }
 
 

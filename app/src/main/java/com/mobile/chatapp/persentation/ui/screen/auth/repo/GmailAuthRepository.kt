@@ -16,6 +16,7 @@ class GmailAuthRepository : AuthRepository {
     private val database : Database = FirebaseFireStoreRepository()
 
 
+
     override suspend fun signUp(email: String, password: String): RegisterUiState {
 
         return try {
@@ -45,5 +46,9 @@ class GmailAuthRepository : AuthRepository {
         } catch (e: Exception) {
             ForgetPasswordUiState.Error(e.localizedMessage ?: "Send failed")
         }
+    }
+
+    override fun getAuthToken(): String {
+        return auth.currentUser?.uid ?: ""
     }
 }
