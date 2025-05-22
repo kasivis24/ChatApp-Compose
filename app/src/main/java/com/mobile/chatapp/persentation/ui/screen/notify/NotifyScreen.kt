@@ -188,9 +188,10 @@ fun RequestCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
         ),
         shape = RoundedCornerShape(10.dp)
 
