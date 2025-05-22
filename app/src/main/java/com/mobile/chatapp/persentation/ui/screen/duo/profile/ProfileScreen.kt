@@ -340,7 +340,6 @@ fun ProfileScreen() {
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(max = 200.dp)
                                 .padding(top = 20.dp)
                                 .padding(horizontal = 20.dp),
                             shape = RoundedCornerShape(16.dp)
