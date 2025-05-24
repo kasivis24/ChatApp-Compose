@@ -16,12 +16,9 @@ import com.mobile.chatapp.data.dto.SearchData
 import com.mobile.chatapp.data.dto.UserData
 import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.data.remote.state.DbEventState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 
-class FirebaseFireStoreRepository : Database {
+class FirebaseRepository : Database {
 
     private val firebaseFireStore = FirebaseFirestore.getInstance()
 
@@ -308,20 +305,18 @@ class FirebaseFireStoreRepository : Database {
                                                     )
                                                 )
                                             }
+                                            _myFriendsFlow.value = tempFriendsList
                                             Log.d("LogData", "Friends list -> $tempFriendsList")
                                         }
                                     }
-
                             }
                         }
                     }
                 }
         }
         catch (e : Exception){
-
+            _myFriendsFlow.value = emptyList()
         }
-
-        _myFriendsFlow.value = tempFriendsList
 
         return _myFriendsFlow
     }

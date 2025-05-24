@@ -125,62 +125,62 @@ fun DuoScreen(
         },
         content = {
 
-            LazyColumn(
-                Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                item {
+
+
+            if (friendsData?.isEmpty() == true) {
+                Column(Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                            .height(45.dp)
-                            .background(
-                                color = Color.Gray.copy(alpha = 0.1f),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .clickable {
-                                navController.navigate(AppRoutes.SEARCH_SCREEN)
-                            },
-                        contentAlignment = Alignment.CenterStart,
+                        Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Outlined.Search, contentDescription = "")
-                            Spacer(Modifier.width(5.dp))
-                            Text(
-                                text = "Search",
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = zohoMedium,
-                                )
-                            )
-                        }
+                        LottieAnimation(
+                            composition = composition,
+                            progress = { progress },
+                            modifier = Modifier.size(250.dp)
+                        )
                     }
                 }
 
-                if (friendsData?.isEmpty() == true) {
+            } else{
+                LazyColumn(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
                     item {
-                        Column(Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center) {
-                            Box(
-                                Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp)
+                                .height(45.dp)
+                                .background(
+                                    color = Color.Gray.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .clickable {
+                                    navController.navigate(AppRoutes.SEARCH_SCREEN)
+                                },
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                LottieAnimation(
-                                    composition = composition,
-                                    progress = { progress },
-                                    modifier = Modifier.size(250.dp)
+                                Icon(Icons.Outlined.Search, contentDescription = "")
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = "Search",
+                                    style = TextStyle(
+                                        fontSize = 15.sp,
+                                        fontFamily = zohoMedium,
+                                    )
                                 )
                             }
                         }
                     }
-                } else {
                     items(friendsData.orEmpty()) {friend ->
                         Log.d("LogData-Friend","Friend Data -> $friend")
                         ChatItem(friend)

@@ -12,6 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DuoViewModel @Inject constructor(private val database: Database): ViewModel(){
+
     private val _friendProfiles = MutableLiveData<List<DuoFriendsData>>(emptyList())
     val friendProfiles : LiveData<List<DuoFriendsData>> = _friendProfiles
 
