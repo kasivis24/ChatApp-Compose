@@ -354,6 +354,8 @@ fun ProfileScreen() {
                                     text = "Bio",
                                     style = TextStyle(fontFamily = zohoRegular),
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
                                     fontSize = 18.sp,
                                 )
                                 Text(
@@ -361,7 +363,9 @@ fun ProfileScreen() {
                                     style = TextStyle(fontFamily = zohoMedium),
                                     color = colorResource(R.color.card_text_color),
                                     fontSize = 18.sp,
-                                    modifier = Modifier.padding(top = 5.dp)
+                                    modifier = Modifier.padding(top = 5.dp),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
                                 )
                                 Text(
                                     text = "Mail",
@@ -375,7 +379,9 @@ fun ProfileScreen() {
                                     style = TextStyle(fontFamily = zohoMedium),
                                     color = colorResource(R.color.card_text_color),
                                     fontSize = 18.sp,
-                                    modifier = Modifier.padding(top = 5.dp)
+                                    modifier = Modifier.padding(top = 5.dp),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
                                 )
                             }
                         }

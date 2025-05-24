@@ -37,6 +37,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +48,7 @@ import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoExtraBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
+import org.w3c.dom.Text
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,13 +156,14 @@ fun ChatItem() {
             .fillMaxWidth()
             .height(70.dp)
             .padding(horizontal = 15.dp, vertical = 5.dp)
+
     ) {
 
         Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
 
             Box(
                 Modifier
-                    .size(60.dp)
+                    .size(55.dp)
                     .clip(CircleShape)
                     .background(color = MaterialTheme.colorScheme.onSurface)
             ) {
@@ -183,12 +186,18 @@ fun ChatItem() {
                         style = TextStyle(
                             fontSize = 18.sp,
                             fontFamily = zohoMedium,
-                        )
+                        ),
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "You: Ok",
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        overflow = TextOverflow.Ellipsis,
                         style = TextStyle(
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             fontFamily = zohoRegular,
                         )
                     )
@@ -224,7 +233,8 @@ fun ChatItem() {
                                 style = TextStyle(
                                     fontSize = 10.sp,
                                     fontFamily = zohoMedium,
-                                )
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
