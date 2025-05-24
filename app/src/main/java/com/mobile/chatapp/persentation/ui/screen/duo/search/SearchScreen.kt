@@ -73,6 +73,7 @@ import com.mobile.chatapp.R
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.dto.SearchData
 import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
+import com.mobile.chatapp.persentation.ui.screen.notify.NotifyViewModel
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
@@ -84,7 +85,7 @@ import java.util.TimeZone
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel()){
+fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel(),notifyViewModel: NotifyViewModel = hiltViewModel()){
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
@@ -173,7 +174,7 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
                                     coroutineScope.launch {
                                         searchViewModel.sendFollowRequest(authViewModel.getAuthToken(),receiverId,day, date, time)
                                     }
-                                })
+                                },notifyViewModel)
                             }
                         }
                     }
@@ -196,7 +197,7 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
 
 
 @Composable
-fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit){
+fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit,notifyViewModel: NotifyViewModel){
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val halfWidth = screenWidth / 3
@@ -246,11 +247,20 @@ fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit){
 
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
                     when (profileData.statusCode){
-                        1 -> StatusCodeOne()
-                        2 -> StatusCodeTwo(profileData, onClick = {
+                        1 -> StatusCodeOne(profileData,
+                        onDecline = {
+                            notifyViewModel.declineRequest(it)
+                        },
+                        onAccept = {
+                            // remove the request from the request table and move the data to DuoChat
+                            notifyViewModel.
+                        })
+                        2 -> StatusCodeTwo(profileData,
+                        onClick = {
                             onClick(it)
                         })
                         3 -> StatusCodeThree()
+
                     }
                 }
 
@@ -264,9 +274,11 @@ fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit){
 }
 
 @Composable
-fun StatusCodeOne(){
+fun StatusCodeOne(searchData: SearchData,onDecline: (String)-> Unit,onAccept: ()-> Unit){
     Row {
-        IconButton(onClick = {}) {
+        IconButton(onClick = {
+            onDecline(searchData.requestId)
+        }) {
             Icon(painter = painterResource(R.drawable.ic_cancel), tint = MaterialTheme.colorScheme.error, contentDescription = "ic_cancel")
         }
         IconButton(onClick = {}) {
@@ -298,7 +310,7 @@ fun PreviewSearchScreenLight(){
     AppTheme {
 //        val navController = rememberNavController()
 //        SearchScreen(navController)
-        StatusCodeOne()
+//        StatusCodeOne()
     }
 }
 
@@ -309,6 +321,6 @@ fun PreviewSearchScreenDark(){
     AppTheme {
 //        val navController = rememberNavController()
 //        SearchScreen(navController)
-        StatusCodeOne()
+//        StatusCodeOne()
     }
 }

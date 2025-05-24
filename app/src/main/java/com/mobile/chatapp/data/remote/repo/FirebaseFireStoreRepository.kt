@@ -102,8 +102,8 @@ class FirebaseFireStoreRepository : Database {
                                                     var occurs : Boolean = true
                                                     requestSenderAndReceive.forEach {requestTemp->
                                                         if (profileTemp.userId.equals(requestTemp.senderId) && requestTemp.receiverId.equals(uId)){
-                                                            Log.d("LogData","Searched Data S1 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1)}")
-                                                            tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1))
+                                                            Log.d("LogData","Searched Data S1 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1,requestTemp.requestId,uId,requestTemp.senderId)}")
+                                                            tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1,requestTemp.requestId,uId,requestTemp.senderId))
                                                             occurs = false
                                                         }else if (profileTemp.userId.equals(requestTemp.receiverId) && requestTemp.senderId.equals(uId)){
                                                             Log.d("LogData", "Searched Data S3 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,3)}")
@@ -174,6 +174,10 @@ class FirebaseFireStoreRepository : Database {
                         val request = snapshot.documents.mapNotNull {it.toObject(RequestData::class.java)}
                         Log.d("LogData","Result Size ${request.size} -> ${request}")
 
+                        if (request.isEmpty()) {
+                            _requestProfilesFlow.value = emptyList()
+                        }
+
                         request.forEach { profileData ->
                             firebaseFireStore.collection("profileData")
                                 .whereEqualTo("userId",profileData.senderId)
@@ -212,6 +216,7 @@ class FirebaseFireStoreRepository : Database {
     }
 
     override suspend fun declineRequest(requestId: String): DbEventState {
+
         return try {
             firebaseFireStore
                 .collection("requestData")

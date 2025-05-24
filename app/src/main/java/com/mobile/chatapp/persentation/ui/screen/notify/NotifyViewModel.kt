@@ -9,6 +9,7 @@ import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.remote.db.Database
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,9 +32,10 @@ class NotifyViewModel @Inject constructor(private val database: Database): ViewM
 
 
     fun declineRequest(requestId : String){
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             database.declineRequest(requestId)
         }
     }
+
 
 }

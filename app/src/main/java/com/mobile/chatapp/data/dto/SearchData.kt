@@ -8,7 +8,10 @@ data class SearchData(
     val mail : String = "",
     val name : String = "",
     val bio : String = "",
-    val statusCode : Int = 0
+    val statusCode : Int = 0,
+    val requestId : String = "",
+    val receiverId : String = "",
+    val senderId : String = "",
 ){
     fun determineSearchStatusCode(): SearchStatusCode {
         return when {
