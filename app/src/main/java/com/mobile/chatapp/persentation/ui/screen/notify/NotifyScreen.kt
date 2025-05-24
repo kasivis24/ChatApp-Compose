@@ -2,6 +2,7 @@ package com.mobile.chatapp.persentation.ui.screen.notify
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,6 +41,10 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,10 +58,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.R
+import com.mobile.chatapp.data.dto.DuoRequestData
+import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
+import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import com.mobile.chatapp.persentation.ui.screen.duo.ChatItem
 import com.mobile.chatapp.persentation.ui.screen.team.TeamScreen
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
@@ -64,6 +74,7 @@ import com.mobile.chatapp.persentation.ui.theme.zohoBold
 import com.mobile.chatapp.persentation.ui.theme.zohoExtraBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -75,7 +86,6 @@ fun NotifyScreen(navController: NavController) {
     val tabTitles = listOf("Duo Requests", "Team Requests")
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
-
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -164,11 +174,32 @@ fun NotifyScreen(navController: NavController) {
 
 
 @Composable
-fun DuoRequest(){
+fun DuoRequest(notifyViewModel: NotifyViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel()){
+
+
+    val requestProfiles by notifyViewModel.requestProfiles.observeAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect (Unit){
+       coroutineScope.launch(Dispatchers.IO){
+           notifyViewModel.getRequestProfiles(authViewModel.getAuthToken())
+           Log.d("LogData","Data from Ui ${requestProfiles}")
+       }
+    }
+
+
     Box(Modifier.fillMaxSize()){
         LazyColumn (Modifier.fillMaxSize()){
-            items(2){
-                RequestCard()
+            requestProfiles?.let {
+                items(it){profileData ->
+                    RequestCard(
+                        profileData,
+                        onDecline = {
+                            notifyViewModel.declineRequest(it)
+                        }
+                    )
+                }
             }
         }
     }
@@ -184,12 +215,11 @@ fun TeamRequest(){
 
 
 @Composable
-fun RequestCard() {
+fun RequestCard(profileData: DuoRequestData,onDecline : (String)-> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 10.dp),
-
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
         ),
@@ -217,19 +247,19 @@ fun RequestCard() {
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "UserName",
+                        text = "${profileData.name}",
                         fontSize = 18.sp,
                         style = TextStyle(fontFamily = zohoBold),
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Text(
-                        text = "sinave@gmail.com",
+                        text = "${profileData.mail}",
                         fontSize = 16.sp,
                         style = TextStyle(fontFamily = zohoMedium),
                         color = colorResource(R.color.card_text_color)
                     )
                     Text(
-                        text = "21 May 25, 12:13 PM",
+                        text = "${profileData.date}, ${profileData.time}",
                         fontSize = 14.sp,
                         style = TextStyle(fontFamily = zohoRegular),
                         color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -246,7 +276,9 @@ fun RequestCard() {
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
                     border = BorderStroke(1.dp, colorResource(R.color.card_text_color)),
-                    onClick = {}) {
+                    onClick = {
+                        onDecline(profileData.requestId)
+                    }) {
                     Text(
                         text = "Cancel",
                         textAlign = TextAlign.Center,

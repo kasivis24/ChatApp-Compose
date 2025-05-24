@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,10 +51,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,6 +71,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mobile.chatapp.R
 import com.mobile.chatapp.data.dto.ProfileData
+import com.mobile.chatapp.data.dto.SearchData
 import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
@@ -81,7 +88,7 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
-    val searchedProfileDataList by searchViewModel.searchProfileList.collectAsState()
+    val searchedProfileDataList by searchViewModel.searchProfileList.observeAsState()
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
 
@@ -160,15 +167,15 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
 
                 if (!searchQuery.isEmpty()){
                     LazyColumn (Modifier.fillMaxSize()){
-
-                        items(searchedProfileDataList){profileData ->
-                            ProfileItem(profileData, onClick = {receiverId ->
-                                coroutineScope.launch {
-                                    searchViewModel.sendFollowRequest(authViewModel.getAuthToken(),receiverId,day, date, time)
-                                }
-                            })
+                        searchedProfileDataList?.let {searchedList->
+                            items(searchedList){ profileData ->
+                                ProfileItem(profileData, onClick = {receiverId ->
+                                    coroutineScope.launch {
+                                        searchViewModel.sendFollowRequest(authViewModel.getAuthToken(),receiverId,day, date, time)
+                                    }
+                                })
+                            }
                         }
-
                     }
                 }else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
@@ -189,7 +196,10 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
 
 
 @Composable
-fun ProfileItem(profileData: ProfileData,onClick: (String)-> Unit){
+fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit){
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val halfWidth = screenWidth / 3
 
 
     Box (Modifier.fillMaxWidth().height(75.dp).padding(bottom = 10.dp, start = 10.dp),){
@@ -207,13 +217,15 @@ fun ProfileItem(profileData: ProfileData,onClick: (String)-> Unit){
 
                 Column (Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,){
 
-                    Text("${profileData.name}",
+                    Text(
+                        "${profileData.name}",
                         fontFamily = zohoMedium,
                         fontSize = 16.sp,
                         maxLines = 1,
                         minLines = 1,
                         fontWeight = FontWeight.W500,
-                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(width = halfWidth),
+                        overflow = TextOverflow.Ellipsis,
                     )
 
                     Text("${profileData.mail}",
@@ -224,6 +236,8 @@ fun ProfileItem(profileData: ProfileData,onClick: (String)-> Unit){
                         fontWeight = FontWeight.W500,
                         color = Color.Gray.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
+                        modifier = Modifier.width(halfWidth),
+                        overflow = TextOverflow.Ellipsis,
                     )
 
 
@@ -231,10 +245,12 @@ fun ProfileItem(profileData: ProfileData,onClick: (String)-> Unit){
 
 
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                    IconButton(onClick = {
-                        onClick(profileData.userId)
-                    }) {
-                        Icon(painter = painterResource(R.drawable.baseline_add_circle_outline_24), contentDescription = "Add")
+                    when (profileData.statusCode){
+                        1 -> StatusCodeOne()
+                        2 -> StatusCodeTwo(profileData, onClick = {
+                            onClick(it)
+                        })
+                        3 -> StatusCodeThree()
                     }
                 }
 
@@ -247,6 +263,34 @@ fun ProfileItem(profileData: ProfileData,onClick: (String)-> Unit){
     }
 }
 
+@Composable
+fun StatusCodeOne(){
+    Row {
+        IconButton(onClick = {}) {
+            Icon(painter = painterResource(R.drawable.ic_cancel), tint = MaterialTheme.colorScheme.error, contentDescription = "ic_cancel")
+        }
+        IconButton(onClick = {}) {
+            Icon(painter = painterResource(R.drawable.ic_check), tint = MaterialTheme.colorScheme.primary, contentDescription = "ic_cancel")
+        }
+    }
+}
+
+@Composable
+fun StatusCodeTwo(profileData: SearchData,onClick: (String) -> Unit){
+    IconButton(onClick = {
+            onClick(profileData.userId)
+    }) {
+        Icon(painter = painterResource(R.drawable.ic_add), contentDescription = "Add")
+    }
+}
+
+@Composable
+fun StatusCodeThree(){
+    IconButton(onClick = {}) {
+        Icon(painter = painterResource(R.drawable.ic_time), tint = colorResource(R.color.card_text_color), contentDescription = "ic_time")
+    }
+}
+
 
 @Preview(showBackground = true,)
 @Composable
@@ -254,6 +298,7 @@ fun PreviewSearchScreenLight(){
     AppTheme {
 //        val navController = rememberNavController()
 //        SearchScreen(navController)
+        StatusCodeOne()
     }
 }
 
@@ -264,5 +309,6 @@ fun PreviewSearchScreenDark(){
     AppTheme {
 //        val navController = rememberNavController()
 //        SearchScreen(navController)
+        StatusCodeOne()
     }
 }
