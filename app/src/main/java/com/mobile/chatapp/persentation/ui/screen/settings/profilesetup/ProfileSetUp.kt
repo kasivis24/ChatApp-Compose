@@ -2,8 +2,14 @@ package com.mobile.chatapp.persentation.ui.screen.settings.profilesetup
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.mobile.chatapp.R
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.remote.state.DbEventState
@@ -76,6 +84,16 @@ fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settin
     var name by rememberSaveable { mutableStateOf("") }
 
     var bio by rememberSaveable { mutableStateOf("") }
+
+    var imageUri by rememberSaveable { mutableStateOf("") }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            imageUri = it.toString()
+        }
+    }
 
     val profileUiState by settingViewModel.uiProfileSetUpState.collectAsState()
 
@@ -104,10 +122,28 @@ fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settin
                     modifier = Modifier.padding(vertical = 30.dp)
                 )
 
-                Box(Modifier.size(150.dp).clip(CircleShape).background(color = MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center){
+                Box(Modifier.size(150.dp)
+                    .clip(CircleShape)
+                    .background(color = MaterialTheme.colorScheme.surfaceContainerHighest)
+                    .clickable {
+                        launcher.launch("image/*")
+                    },
+                    contentAlignment = Alignment.Center){
 
 
-                    Icon(modifier = Modifier.size(50.dp), painter = painterResource(R.drawable.baseline_add_a_photo_24), contentDescription = "Add-Photo")
+                    if (imageUri.isEmpty()){
+                        Icon(modifier = Modifier.size(50.dp), painter = painterResource(R.drawable.baseline_add_a_photo_24), contentDescription = "Add-Photo")
+                    }else{
+                        AsyncImage(
+                            model = Uri.parse(imageUri),
+                            contentDescription = "Selected Image",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(5.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
 
 
                 }
@@ -283,7 +319,7 @@ fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settin
                             .padding(10.dp)
                             .height(56.dp),
                         onClick = {
-                            settingViewModel.profileSetUp(ProfileData(uId,"",name,gmail,bio))
+                            settingViewModel.uploadProfile(Uri.parse(imageUri),uId,gmail,name,bio)
                         },
                         shape = RoundedCornerShape(10.dp),
                     ){

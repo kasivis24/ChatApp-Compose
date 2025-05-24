@@ -3,7 +3,7 @@ package com.mobile.chatapp.persentation.ui.screen.auth.repo
 import com.google.firebase.auth.FirebaseAuth
 import com.mobile.chatapp.data.dto.UserData
 import com.mobile.chatapp.data.remote.db.Database
-import com.mobile.chatapp.data.remote.repo.FirebaseFireStoreRepository
+import com.mobile.chatapp.data.remote.repo.FirebaseRepository
 import com.mobile.chatapp.persentation.ui.screen.auth.state.ForgetPasswordUiState
 import com.mobile.chatapp.persentation.ui.screen.auth.state.LoginUiState
 import com.mobile.chatapp.persentation.ui.screen.auth.state.RegisterUiState
@@ -13,7 +13,7 @@ class GmailAuthRepository : AuthRepository {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private val database : Database = FirebaseFireStoreRepository()
+    private val database : Database = FirebaseRepository()
 
 
 

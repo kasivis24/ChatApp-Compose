@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -93,5 +94,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.34.0")
 
     implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0")
-    
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+
 }

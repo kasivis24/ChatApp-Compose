@@ -1,7 +1,7 @@
 package com.mobile.chatapp.di
 
 import com.mobile.chatapp.data.remote.db.Database
-import com.mobile.chatapp.data.remote.repo.FirebaseFireStoreRepository
+import com.mobile.chatapp.data.remote.repo.FirebaseRepository
 import com.mobile.chatapp.persentation.ui.screen.auth.repo.AuthRepository
 import com.mobile.chatapp.persentation.ui.screen.auth.repo.GmailAuthRepository
 import dagger.Module
@@ -20,6 +20,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseFireStoreRepository(): Database = FirebaseFireStoreRepository()
+    fun provideFirebaseFireStoreRepository(): Database = FirebaseRepository()
 
 }

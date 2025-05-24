@@ -1,5 +1,6 @@
 package com.mobile.chatapp.persentation.ui.screen.settings.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.chatapp.data.dto.ProfileData
@@ -19,15 +20,26 @@ class SettingViewModel @Inject constructor(private val database: Database): View
     private val _uiProfileSetUpState = MutableStateFlow<DbEventState>(DbEventState.Idle)
     val uiProfileSetUpState : StateFlow<DbEventState> = _uiProfileSetUpState
 
-    fun profileSetUp(profileData: ProfileData) {
+
+    fun uploadProfile(uri: Uri,uId : String,mail : String,name : String,bio : String) {
+
+
         _uiProfileSetUpState.value = DbEventState.Loading
-        if (profileData.mail.isEmpty() || profileData.name.isEmpty() || profileData.bio.isEmpty()){
+        if (mail.isEmpty() || name.isEmpty() || bio.isEmpty() || uri.toString().isEmpty()){
             _uiProfileSetUpState.value = DbEventState.Error("Something went wrong")
         }else{
             viewModelScope.launch (Dispatchers.IO){
-                _uiProfileSetUpState.value = database.addProfileData(profileData)
+                database.uploadProfileImage(
+                    uri,
+                    onSuccessImage = {imageUrl->
+                        viewModelScope.launch (Dispatchers.IO){
+                            _uiProfileSetUpState.value = database.addProfileData(ProfileData(uId,imageUrl,name,mail,bio))
+                        }
+                    }
+                )
             }
         }
+
     }
 
 
