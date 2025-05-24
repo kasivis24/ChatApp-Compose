@@ -1,5 +1,6 @@
 package com.mobile.chatapp.data.remote.db
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoFriendsData
@@ -28,4 +29,6 @@ interface Database {
     suspend fun acceptRequest(duoChatData: DuoChatData) : DbEventState
 
     suspend fun getMyFriends(uId : String) : LiveData<List<DuoFriendsData>>
+
+    suspend fun uploadProfileImage(uri: Uri,onSuccessImage : (String)-> Unit) : String
 }

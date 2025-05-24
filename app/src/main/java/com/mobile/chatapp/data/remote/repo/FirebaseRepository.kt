@@ -1,10 +1,12 @@
 package com.mobile.chatapp.data.remote.repo
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.dto.DuoRequestData
@@ -22,6 +24,8 @@ import kotlinx.coroutines.tasks.await
 class FirebaseFireStoreRepository : Database {
 
     private val firebaseFireStore = FirebaseFirestore.getInstance()
+
+    private val firebaseStorage = FirebaseStorage.getInstance()
 
 
     override suspend fun addUser(userData: UserData) : DbEventState {
@@ -267,6 +271,8 @@ class FirebaseFireStoreRepository : Database {
         }
     }
 
+
+
     override suspend fun getMyFriends(uId: String): LiveData<List<DuoFriendsData>> {
         val _myFriendsFlow = MutableLiveData<List<DuoFriendsData>>(emptyList())
         val tempFriendsList = mutableStateListOf<DuoFriendsData>()
@@ -319,6 +325,22 @@ class FirebaseFireStoreRepository : Database {
 
         return _myFriendsFlow
     }
+
+
+    override suspend fun uploadProfileImage(uri: Uri, onSuccessImage: (String) -> Unit): String {
+        return try {
+            val storageRef = firebaseStorage.reference
+                .child("ChatAppStorage/${System.currentTimeMillis()}_${uri.lastPathSegment}")
+
+            val uploadTask = storageRef.putFile(uri).await() // Wait for upload
+            val downloadUrl = storageRef.downloadUrl.await() // Wait for URL
+            onSuccessImage(downloadUrl.toString())
+            downloadUrl.toString()
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
 
 
 }
