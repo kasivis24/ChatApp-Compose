@@ -211,17 +211,16 @@ class FirebaseFireStoreRepository : Database {
 
                                         request.forEach {requestDataForEach->
                                             requestProfiles.forEach {profileDataforEach->
-
-                                                if (requestDataForEach.senderId == profileDataforEach.userId){
-                                                    tempProfilesList.add(DuoRequestData(requestDataForEach.requestId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time))
+                                                if (requestDataForEach.senderId.equals(profileDataforEach.userId) && requestDataForEach.receiverId.equals(uId)){
+                                                    tempProfilesList.add(DuoRequestData(requestDataForEach.requestId,requestDataForEach.senderId,requestDataForEach.receiverId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time))
+                                                    Log.d("LogData","Data Notify list main -> ${DuoRequestData(requestDataForEach.requestId,requestDataForEach.senderId,requestDataForEach.receiverId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time)}")
                                                 }
-                                                Log.d("LogData","for lop $it")
                                             }
                                         }
 
                                         _requestProfilesFlow.value = tempProfilesList
                                         Log.d("LogData","List Dtaa ${requestProfiles.size} and ${requestProfiles}")
-                                        Log.d("LogData","Result -> ${_requestProfilesFlow.value}")
+                                        Log.d("LogData","Result  For Notify Data  -> ${_requestProfilesFlow.value}")
                                     }
                             }
                         }

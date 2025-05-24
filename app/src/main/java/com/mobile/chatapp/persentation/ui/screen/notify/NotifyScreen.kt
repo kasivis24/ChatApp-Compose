@@ -63,6 +63,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.R
+import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoRequestData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
@@ -197,6 +198,12 @@ fun DuoRequest(notifyViewModel: NotifyViewModel = hiltViewModel(),authViewModel:
                         profileData,
                         onDecline = {
                             notifyViewModel.declineRequest(it)
+                        },
+                        onAccept = {requestId,senderId,receiverId->
+                            notifyViewModel.acceptRequest(requestId, DuoChatData(senderId,receiverId,true))
+                            Log.d("LogData","SenderID -> ${senderId}")
+                            Log.d("LogData","Reciver -> ${receiverId}")
+                            Log.d("LogData","RequestID -> ${requestId}")
                         }
                     )
                 }
@@ -215,7 +222,7 @@ fun TeamRequest(){
 
 
 @Composable
-fun RequestCard(profileData: DuoRequestData,onDecline : (String)-> Unit) {
+fun RequestCard(profileData: DuoRequestData,onDecline : (String)-> Unit,onAccept : (String,String,String)-> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -290,7 +297,9 @@ fun RequestCard(profileData: DuoRequestData,onDecline : (String)-> Unit) {
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
                     border = BorderStroke(1.dp, colorResource(R.color.card_text_color)),
-                    onClick = {}) {
+                    onClick = {
+                        onAccept(profileData.requestId,profileData.senderId,profileData.receiverId)
+                    }) {
                     Text(
                         text = "Accept",
                         textAlign = TextAlign.Center,
