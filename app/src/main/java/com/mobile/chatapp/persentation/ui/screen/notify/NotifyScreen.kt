@@ -62,6 +62,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mobile.chatapp.R
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoRequestData
@@ -179,6 +184,9 @@ fun DuoRequest(notifyViewModel: NotifyViewModel = hiltViewModel(),authViewModel:
 
 
     val requestProfiles by notifyViewModel.requestProfiles.observeAsState()
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
+
+    val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -191,6 +199,15 @@ fun DuoRequest(notifyViewModel: NotifyViewModel = hiltViewModel(),authViewModel:
 
 
     Box(Modifier.fillMaxSize()){
+        if(requestProfiles?.isEmpty() == true){
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(250.dp)
+                )
+            }
+        }
         LazyColumn (Modifier.fillMaxSize()){
             requestProfiles?.let {
                 items(it){profileData ->
@@ -215,8 +232,18 @@ fun DuoRequest(notifyViewModel: NotifyViewModel = hiltViewModel(),authViewModel:
 
 @Composable
 fun TeamRequest(){
-    Box(Modifier.fillMaxSize()){
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
 
+    val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
+
+    Box(Modifier.fillMaxSize()){
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier.size(250.dp)
+            )
+        }
     }
 }
 

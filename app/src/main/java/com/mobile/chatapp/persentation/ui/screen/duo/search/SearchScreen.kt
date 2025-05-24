@@ -67,6 +67,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mobile.chatapp.R
@@ -94,7 +95,7 @@ fun SearchScreen(navController: NavController,searchViewModel: SearchViewModel =
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
 
-    val progress by animateLottieCompositionAsState(composition)
+    val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
 
     val coroutineScope = rememberCoroutineScope()
 

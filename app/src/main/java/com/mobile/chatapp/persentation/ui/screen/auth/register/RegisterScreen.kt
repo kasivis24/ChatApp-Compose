@@ -3,6 +3,7 @@ package com.mobile.chatapp.persentation.ui.screen.auth.register
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -258,6 +259,9 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                                 fontFamily = zohoMedium,
                                 color = MaterialTheme.colorScheme.primary
                             ),
+                            modifier = Modifier.clickable {
+                                navController.navigate(AppRoutes.LOGIN_SCREEN)
+                            }
                         )
 
                     }
