@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mobile.chatapp.data.dto.DuoChatData
+import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.dto.DuoRequestData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.dto.RequestData
@@ -264,6 +265,59 @@ class FirebaseFireStoreRepository : Database {
         catch (e : Exception){
             DbEventState.Error("Something went wrong")
         }
+    }
+
+    override suspend fun getMyFriends(uId: String): LiveData<List<DuoFriendsData>> {
+        val _myFriendsFlow = MutableLiveData<List<DuoFriendsData>>(emptyList())
+        val tempFriendsList = mutableStateListOf<DuoFriendsData>()
+        try {
+            firebaseFireStore
+                .collection("duoChatData")
+                .whereEqualTo("userId", uId)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null) {
+
+                        snapshot.documents.map {
+                            val friendId = it.toObject(DuoChatData::class.java)?.friendId
+                            if (friendId != null) {
+                                firebaseFireStore
+                                    .collection("profileData")
+                                    .whereEqualTo("userId", friendId)
+                                    .addSnapshotListener { it, error ->
+                                        if (error != null){
+                                            return@addSnapshotListener
+                                        }
+                                        if (it != null) {
+                                            val friendsDataList = it.documents.mapNotNull { it.toObject(ProfileData::class.java) }
+                                            friendsDataList.forEach {friendData ->
+                                                tempFriendsList.add(
+                                                    DuoFriendsData(
+                                                        friendData?.imageUrl ?: "",
+                                                        friendData?.name ?: "",
+                                                        friendData?.mail ?: "",
+                                                        friendId, true, "", "", "", 5
+                                                    )
+                                                )
+                                            }
+                                            Log.d("LogData", "Friends list -> $tempFriendsList")
+                                        }
+                                    }
+
+                            }
+                        }
+                    }
+                }
+        }
+        catch (e : Exception){
+
+        }
+
+        _myFriendsFlow.value = tempFriendsList
+
+        return _myFriendsFlow
     }
 
 

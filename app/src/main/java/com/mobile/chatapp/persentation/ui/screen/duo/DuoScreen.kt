@@ -1,6 +1,7 @@
 package com.mobile.chatapp.persentation.ui.screen.duo
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mobile.chatapp.R
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
@@ -49,13 +52,40 @@ import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoExtraBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
-import org.w3c.dom.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.lazy.items
+import com.mobile.chatapp.data.dto.DuoFriendsData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DuoScreen(navController: NavController) {
+fun DuoScreen(
+    navController: NavController,
+    duoViewModel: DuoViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
 
+    val friendsData by duoViewModel.friendProfiles.observeAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
+    val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
+
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            duoViewModel.getFriendProfiles(authViewModel.getAuthToken())
+            Log.d("LogData", "Data from Ui -> $friendsData")
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -101,8 +131,6 @@ fun DuoScreen(navController: NavController) {
                     .padding(it)
             ) {
                 item {
-
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -134,23 +162,37 @@ fun DuoScreen(navController: NavController) {
                             )
                         }
                     }
-
                 }
 
-
-                items(20) {
-                    Spacer(Modifier.height(10.dp))
-                    ChatItem()
+                if (friendsData?.isEmpty() == true) {
+                    item {
+                        Column(Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center) {
+                            Box(
+                                Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LottieAnimation(
+                                    composition = composition,
+                                    progress = { progress },
+                                    modifier = Modifier.size(250.dp)
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    items(friendsData.orEmpty()) {friend ->
+                        Log.d("LogData-Friend","Friend Data -> $friend")
+                        ChatItem(friend)
+                    }
                 }
-
             }
         }
     )
 }
 
-
 @Composable
-fun ChatItem() {
+fun ChatItem(friend: DuoFriendsData) {
 
     Box(
         Modifier
@@ -183,7 +225,7 @@ fun ChatItem() {
                 ) {
 
                     Text(
-                        text = "Kinston",
+                        text = friend.friendName,
                         style = TextStyle(
                             fontSize = 18.sp,
                             fontFamily = zohoMedium,
@@ -219,8 +261,7 @@ fun ChatItem() {
                         textAlign = TextAlign.Center,
                         color = colorResource(R.color.card_text_color)
                     )
-                    Row(
-                    ) {
+                    Row{
                         Box(
                             Modifier
                                 .size(24.dp)
@@ -230,7 +271,7 @@ fun ChatItem() {
                         ) {
                             Text(
                                 textAlign = TextAlign.Center,
-                                text = "9",
+                                text = friend.unreadMsg.toString(),
                                 style = TextStyle(
                                     fontSize = 10.sp,
                                     fontFamily = zohoMedium,
@@ -239,7 +280,6 @@ fun ChatItem() {
                             )
                         }
                     }
-
                 }
             }
 
