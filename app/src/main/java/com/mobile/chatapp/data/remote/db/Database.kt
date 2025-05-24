@@ -1,6 +1,7 @@
 package com.mobile.chatapp.data.remote.db
 
 import androidx.lifecycle.LiveData
+import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoRequestData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.dto.RequestData
@@ -22,6 +23,8 @@ interface Database {
     suspend fun getRequests(uId : String) : LiveData<List<DuoRequestData>>
 
     suspend fun declineRequest(requestId : String) : DbEventState
+
+    suspend fun acceptRequest(duoChatData: DuoChatData) : DbEventState
 
 
 }

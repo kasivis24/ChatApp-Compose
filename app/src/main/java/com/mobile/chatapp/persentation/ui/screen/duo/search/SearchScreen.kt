@@ -70,6 +70,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mobile.chatapp.R
+import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.dto.SearchData
 import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
@@ -251,15 +252,17 @@ fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit,notifyViewModel
                         onDecline = {
                             notifyViewModel.declineRequest(it)
                         },
-                        onAccept = {
+                        onAccept = {requestId,senderId,receiverid->
                             // remove the request from the request table and move the data to DuoChat
-                            notifyViewModel.
+                            notifyViewModel.acceptRequest(requestId,DuoChatData(senderId,receiverid,true))
                         })
                         2 -> StatusCodeTwo(profileData,
                         onClick = {
                             onClick(it)
                         })
                         3 -> StatusCodeThree()
+
+                        4 -> StatusCodeFour()
 
                     }
                 }
@@ -274,14 +277,16 @@ fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit,notifyViewModel
 }
 
 @Composable
-fun StatusCodeOne(searchData: SearchData,onDecline: (String)-> Unit,onAccept: ()-> Unit){
+fun StatusCodeOne(searchData: SearchData,onDecline: (String)-> Unit,onAccept: (String,String,String)-> Unit){
     Row {
         IconButton(onClick = {
             onDecline(searchData.requestId)
         }) {
             Icon(painter = painterResource(R.drawable.ic_cancel), tint = MaterialTheme.colorScheme.error, contentDescription = "ic_cancel")
         }
-        IconButton(onClick = {}) {
+        IconButton(onClick = {
+            onAccept(searchData.requestId,searchData.senderId,searchData.receiverId)
+        }) {
             Icon(painter = painterResource(R.drawable.ic_check), tint = MaterialTheme.colorScheme.primary, contentDescription = "ic_cancel")
         }
     }
@@ -300,6 +305,13 @@ fun StatusCodeTwo(profileData: SearchData,onClick: (String) -> Unit){
 fun StatusCodeThree(){
     IconButton(onClick = {}) {
         Icon(painter = painterResource(R.drawable.ic_time), tint = colorResource(R.color.card_text_color), contentDescription = "ic_time")
+    }
+}
+
+@Composable
+fun StatusCodeFour(){
+    IconButton(onClick = {}) {
+        Icon(painter = painterResource(R.drawable.ic_msg), tint = colorResource(R.color.card_text_color), contentDescription = "ic_time")
     }
 }
 

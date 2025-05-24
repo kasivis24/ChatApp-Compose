@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
+import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoRequestData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.dto.RequestData
@@ -86,7 +87,6 @@ class FirebaseFireStoreRepository : Database {
                                             }
                                             if (snapshotProfile != null) {
 
-                                                val tempSearchedProfilesList = mutableStateListOf<SearchData>()
 
                                                 val profiles = snapshotProfile.documents.mapNotNull { it.toObject(ProfileData::class.java) }
                                                     .filter { profile ->
@@ -94,32 +94,56 @@ class FirebaseFireStoreRepository : Database {
                                                     }
 
 
-                                                Log.d("LogData","Request LIst reciver -> ${requests}")
-                                                Log.d("LogData","Request LIst sendeer -> ${requestSender}")
+                                                firebaseFireStore
+                                                    .collection("duoChatData")
+                                                    .addSnapshotListener { snapshotChat, error ->
+                                                        if (error != null) {
+                                                            return@addSnapshotListener
+                                                        }
+                                                        if (snapshotChat != null){
+
+                                                            val duoChatData = snapshotChat.documents.mapNotNull { it.toObject(DuoChatData::class.java) }
+
+                                                            val tempSearchedProfilesList = mutableStateListOf<SearchData>()
+
+                                                            Log.d("LogData","Request LIst reciver -> ${requests}")
+                                                            Log.d("LogData","Request LIst sendeer -> ${requestSender}")
 
 
-                                                profiles.forEach {profileTemp->
-                                                    var occurs : Boolean = true
-                                                    requestSenderAndReceive.forEach {requestTemp->
-                                                        if (profileTemp.userId.equals(requestTemp.senderId) && requestTemp.receiverId.equals(uId)){
-                                                            Log.d("LogData","Searched Data S1 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1,requestTemp.requestId,uId,requestTemp.senderId)}")
-                                                            tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1,requestTemp.requestId,uId,requestTemp.senderId))
-                                                            occurs = false
-                                                        }else if (profileTemp.userId.equals(requestTemp.receiverId) && requestTemp.senderId.equals(uId)){
-                                                            Log.d("LogData", "Searched Data S3 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,3)}")
-                                                            tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,3))
-                                                            occurs = false
+                                                            profiles.forEach {profileTemp->
+                                                                var occurs : Boolean = true
+                                                                requestSenderAndReceive.forEach {requestTemp->
+                                                                    if (profileTemp.userId.equals(requestTemp.senderId) && requestTemp.receiverId.equals(uId)){
+                                                                        Log.d("LogData","Searched Data S1 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1,requestTemp.requestId,uId,requestTemp.senderId)}")
+                                                                        tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,1,requestTemp.requestId,uId,requestTemp.senderId))
+                                                                        occurs = false
+                                                                    }else if (profileTemp.userId.equals(requestTemp.receiverId) && requestTemp.senderId.equals(uId)){
+                                                                        Log.d("LogData", "Searched Data S3 -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,3)}")
+                                                                        tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,3))
+                                                                        occurs = false
+                                                                    }
+                                                                }
+
+                                                                duoChatData.forEach {
+                                                                    if (occurs && it.friendId.equals(profileTemp.userId) && it.userId.equals(uId)){
+                                                                        Log.d("LogData", "Searched In chat UI -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,4)}")
+                                                                        tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,4))
+                                                                        occurs = false
+                                                                    }
+                                                                }
+                                                                if (occurs){
+                                                                    Log.d("LogData","Searched Data occurs -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,2)}")
+                                                                    tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,2))
+                                                                }
+                                                            }
+
+                                                            Log.d("LogData","Searched Data Last -> $tempSearchedProfilesList")
+                                                            _profilesFlow.value = tempSearchedProfilesList
+                                                            Log.d("LogData","Searched Data Last -> Return List${_profilesFlow.value}")
+
                                                         }
                                                     }
-                                                    if (occurs){
-                                                        Log.d("LogData","Searched Data occurs -> ${SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,2)}")
-                                                        tempSearchedProfilesList.add(SearchData(profileTemp.userId,profileTemp.imageUrl,profileTemp.mail,profileTemp.name,profileTemp.bio,2))
-                                                    }
-                                                }
 
-                                                Log.d("LogData","Searched Data Last -> $tempSearchedProfilesList")
-                                                _profilesFlow.value = tempSearchedProfilesList
-                                                Log.d("LogData","Searched Data Last -> Return List${_profilesFlow.value}")
                                             }
                                         }
 
@@ -223,6 +247,20 @@ class FirebaseFireStoreRepository : Database {
                 .document(requestId)
                 .delete()
             DbEventState.Success("Request Decline Success")
+        }
+        catch (e : Exception){
+            DbEventState.Error("Something went wrong")
+        }
+    }
+
+    override suspend fun acceptRequest(duoChatData: DuoChatData): DbEventState {
+        return try {
+            firebaseFireStore
+                .collection("duoChatData")
+                .document()
+                .set(duoChatData)
+                .await()
+            DbEventState.Success("Request Send Success")
         }
         catch (e : Exception){
             DbEventState.Error("Something went wrong")

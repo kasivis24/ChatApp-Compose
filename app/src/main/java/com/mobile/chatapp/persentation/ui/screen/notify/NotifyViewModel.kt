@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoRequestData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.remote.db.Database
@@ -37,5 +38,12 @@ class NotifyViewModel @Inject constructor(private val database: Database): ViewM
         }
     }
 
+    fun acceptRequest(requestId: String,duoChatData: DuoChatData){
+        viewModelScope.launch (Dispatchers.IO){
+            database.declineRequest(requestId)
+            database.acceptRequest(duoChatData)
+            database.acceptRequest(DuoChatData(duoChatData.friendId,duoChatData.userId,true))
+        }
+    }
 
 }
