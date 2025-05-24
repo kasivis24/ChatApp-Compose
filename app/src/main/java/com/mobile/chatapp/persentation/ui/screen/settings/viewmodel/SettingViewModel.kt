@@ -20,9 +20,13 @@ class SettingViewModel @Inject constructor(private val database: Database): View
     val uiProfileSetUpState : StateFlow<DbEventState> = _uiProfileSetUpState
 
     fun profileSetUp(profileData: ProfileData) {
-        viewModelScope.launch (Dispatchers.IO){
-            _uiProfileSetUpState.value = DbEventState.Loading
-            _uiProfileSetUpState.value = database.addProfileData(profileData)
+        _uiProfileSetUpState.value = DbEventState.Loading
+        if (profileData.mail.isEmpty() || profileData.name.isEmpty() || profileData.bio.isEmpty()){
+            _uiProfileSetUpState.value = DbEventState.Error("Something went wrong")
+        }else{
+            viewModelScope.launch (Dispatchers.IO){
+                _uiProfileSetUpState.value = database.addProfileData(profileData)
+            }
         }
     }
 
