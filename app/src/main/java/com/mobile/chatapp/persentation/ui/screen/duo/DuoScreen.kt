@@ -141,46 +141,46 @@ fun DuoScreen(
                         )
                     }
                 }
-
-            } else{
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    item {
-                        Box(
-                            modifier = Modifier
+            }
+            LazyColumn(
+                Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .height(45.dp)
+                            .background(
+                                color = Color.Gray.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .clickable {
+                                navController.navigate(AppRoutes.SEARCH_SCREEN)
+                            },
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Row(
+                            Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 10.dp)
-                                .height(45.dp)
-                                .background(
-                                    color = Color.Gray.copy(alpha = 0.1f),
-                                    shape = RoundedCornerShape(20.dp)
-                                )
-                                .clickable {
-                                    navController.navigate(AppRoutes.SEARCH_SCREEN)
-                                },
-                            contentAlignment = Alignment.CenterStart,
+                                .padding(horizontal = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(Icons.Outlined.Search, contentDescription = "")
-                                Spacer(Modifier.width(5.dp))
-                                Text(
-                                    text = "Search",
-                                    style = TextStyle(
-                                        fontSize = 15.sp,
-                                        fontFamily = zohoMedium,
-                                    )
+                            Icon(Icons.Outlined.Search, contentDescription = "")
+                            Spacer(Modifier.width(5.dp))
+                            Text(
+                                text = "Search",
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontFamily = zohoMedium,
                                 )
-                            }
+                            )
                         }
                     }
+                }
+                if (friendsData?.isNotEmpty() == true){
                     items(friendsData.orEmpty()) {friend ->
                         Log.d("LogData-Friend","Friend Data -> $friend")
                         ChatItem(friend)

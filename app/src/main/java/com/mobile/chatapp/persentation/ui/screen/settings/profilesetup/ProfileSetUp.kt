@@ -76,7 +76,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
-fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settingViewModel: SettingViewModel = hiltViewModel()){
+fun ProfileSetUp(navController: NavController,refId : String,gmail : String,uId : String,settingViewModel: SettingViewModel = hiltViewModel()){
 
 
     Log.d("LogSetUp",uId);
@@ -319,7 +319,7 @@ fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settin
                             .padding(10.dp)
                             .height(56.dp),
                         onClick = {
-                            settingViewModel.uploadProfile(Uri.parse(imageUri),uId,gmail,name,bio)
+                            settingViewModel.uploadProfile(Uri.parse(imageUri),uId,gmail,name,bio,refId)
                         },
                         shape = RoundedCornerShape(10.dp),
                     ){
@@ -385,7 +385,7 @@ fun ProfileSetUp(navController: NavController,gmail : String,uId : String,settin
 fun PreviewProfileSetUpLight(){
     AppTheme {
         val navController = rememberNavController()
-        ProfileSetUp(navController,"","")
+//        ProfileSetUp(navController,"","")
     }
 }
 
@@ -395,6 +395,6 @@ fun PreviewProfileSetUpLight(){
 fun PreviewProfileSetUpDark(){
     AppTheme {
         val navController = rememberNavController()
-        ProfileSetUp(navController,"","")
+//        ProfileSetUp(navController,"","")
     }
 }

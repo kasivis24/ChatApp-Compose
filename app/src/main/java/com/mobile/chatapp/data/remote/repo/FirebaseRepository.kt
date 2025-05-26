@@ -37,9 +37,9 @@ class FirebaseRepository : Database {
         }
     }
 
-    override suspend fun addProfileData(profileData: ProfileData): DbEventState {
+    override suspend fun updateProfileData(profileData: ProfileData,refId : String): DbEventState {
         return try {
-            firebaseFireStore.collection("profileData").document()
+            firebaseFireStore.collection("profileData").document(refId)
                 .set(profileData).await()
             DbEventState.Success("ProfileData Added Success")
         }
@@ -47,6 +47,18 @@ class FirebaseRepository : Database {
             DbEventState.Error("Something went wrong")
         }
     }
+
+    override suspend fun getProfileRef(profileData: ProfileData): String {
+        return try {
+            val ref = firebaseFireStore.collection("profileData").document()
+            val id = ref.id
+            ref.set(profileData).await()
+            id
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
 
     override suspend fun searchProfile(searchQuery: String,uId : String): LiveData<List<SearchData>> {
         val _profilesFlow = MutableLiveData<List<SearchData>>(emptyList())

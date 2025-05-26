@@ -309,7 +309,7 @@ fun RegisterScreen(navController: NavController,authViewModel: AuthViewModel = h
                                         snackbarHostState.showSnackbar("Welcome back! You’re signed in.")
                                         Log.d("LogAuth","Succes Gmail Login")
 //                                        navController.navigate(AppRoutes.HOME_SCREEN)
-                                        navController.navigate("${AppRoutes.PROFILESETUP_SCREEN}/$email/${state.userId}")
+                                        navController.navigate("${AppRoutes.PROFILESETUP_SCREEN}/$email/${state.userId}/${state.refId}")
                                         authViewModel.resetStateRegister()
                                     }
 

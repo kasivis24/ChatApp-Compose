@@ -1,4 +1,6 @@
 package com.mobile.chatapp.persentation.navigation.appnav
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,6 +14,7 @@ import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
 import com.mobile.chatapp.persentation.ui.screen.settings.profilesetup.ProfileSetUp
 import com.mobile.chatapp.persentation.ui.screen.splash.SplashScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation(navHostController: NavHostController){
     NavHost(navController = navHostController, startDestination = AppRoutes.SPLASH_SCREEN){
@@ -32,7 +35,7 @@ fun AppNavigation(navHostController: NavHostController){
             RegisterScreen(navHostController)
         }
 
-        composable("${AppRoutes.PROFILESETUP_SCREEN}/{gmail}/{uId}",
+        composable("${AppRoutes.PROFILESETUP_SCREEN}/{gmail}/{uId}/{refId}",
             arguments = listOf(
                 navArgument("gmail"){
                     type = NavType.StringType
@@ -40,9 +43,12 @@ fun AppNavigation(navHostController: NavHostController){
                 navArgument("uId"){
                     type = NavType.StringType
                 },
+                navArgument("refId"){
+                    type = NavType.StringType
+                }
             )
             ) {
-            ProfileSetUp(navHostController,it.arguments?.getString("gmail") ?: "",it.arguments?.getString("uId") ?: "")
+            ProfileSetUp(navHostController,it.arguments?.getString("refId") ?: "",it.arguments?.getString("gmail") ?: "",it.arguments?.getString("uId") ?: "")
         }
 
         composable(AppRoutes.SEARCH_SCREEN) {

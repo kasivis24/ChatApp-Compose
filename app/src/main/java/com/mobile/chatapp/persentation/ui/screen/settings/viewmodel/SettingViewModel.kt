@@ -21,7 +21,7 @@ class SettingViewModel @Inject constructor(private val database: Database): View
     val uiProfileSetUpState : StateFlow<DbEventState> = _uiProfileSetUpState
 
 
-    fun uploadProfile(uri: Uri,uId : String,mail : String,name : String,bio : String) {
+    fun uploadProfile(uri: Uri,uId : String,mail : String,name : String,bio : String,refId : String) {
 
 
         _uiProfileSetUpState.value = DbEventState.Loading
@@ -33,7 +33,7 @@ class SettingViewModel @Inject constructor(private val database: Database): View
                     uri,
                     onSuccessImage = {imageUrl->
                         viewModelScope.launch (Dispatchers.IO){
-                            _uiProfileSetUpState.value = database.addProfileData(ProfileData(uId,imageUrl,name,mail,bio))
+                            _uiProfileSetUpState.value = database.updateProfileData(ProfileData(uId,imageUrl,name,mail,bio),refId)
                         }
                     }
                 )

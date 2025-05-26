@@ -16,7 +16,9 @@ interface Database {
 
     suspend fun addUser(userData: UserData) : DbEventState
 
-    suspend fun addProfileData(profileData: ProfileData) : DbEventState
+    suspend fun updateProfileData(profileData: ProfileData,refId : String) : DbEventState
+
+    suspend fun getProfileRef(profileData: ProfileData) : String
 
     suspend fun searchProfile(searchQuery : String,uId : String) : LiveData<List<SearchData>>
 
@@ -31,4 +33,5 @@ interface Database {
     suspend fun getMyFriends(uId : String) : LiveData<List<DuoFriendsData>>
 
     suspend fun uploadProfileImage(uri: Uri,onSuccessImage : (String)-> Unit) : String
+
 }
