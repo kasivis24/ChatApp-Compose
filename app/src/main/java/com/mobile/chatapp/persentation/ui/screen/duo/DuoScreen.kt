@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,11 +30,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -63,6 +60,7 @@ import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.Alignment
 import com.mobile.chatapp.data.dto.DuoFriendsData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -152,6 +150,7 @@ fun DuoScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
+                            .padding(bottom = 8.dp)
                             .height(45.dp)
                             .background(
                                 color = Color.Gray.copy(alpha = 0.1f),
@@ -212,16 +211,17 @@ fun ChatItem(friend: DuoFriendsData) {
             ) {
 
             }
-            Row(
-                Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                Modifier.fillMaxSize()
+                    .padding(vertical = 6.dp),
+                verticalArrangement =  Arrangement.SpaceBetween
             ) {
-                Column(
+                Row(
                     Modifier
-                        .fillMaxHeight()
+                        .fillMaxWidth()
                         .padding(horizontal = 15.dp),
-                    Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     Text(
@@ -235,6 +235,25 @@ fun ChatItem(friend: DuoFriendsData) {
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
+                        text = "10:45 PM",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontFamily = zohoMedium,
+                        ),
+                        textAlign = TextAlign.Center,
+                        color = colorResource(R.color.card_text_color)
+                    )
+                }
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
                         text = "You: Ok",
                         maxLines = 1,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -243,23 +262,6 @@ fun ChatItem(friend: DuoFriendsData) {
                             fontSize = 14.sp,
                             fontFamily = zohoRegular,
                         )
-                    )
-                }
-
-                Column(
-                    Modifier.fillMaxHeight(),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.SpaceEvenly
-
-                ) {
-                    Text(
-                        text = "10:45 PM",
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontFamily = zohoMedium,
-                        ),
-                        textAlign = TextAlign.Center,
-                        color = colorResource(R.color.card_text_color)
                     )
                     Row{
                         Box(
@@ -295,7 +297,7 @@ fun ChatItem(friend: DuoFriendsData) {
 @Composable
 fun ChatPreview() {
     AppTheme {
-//        ChatItem()
-        DuoScreen(navController = NavController(LocalContext.current))
+        ChatItem(friend = DuoFriendsData("","Shivv"))
+//        DuoScreen(navController = NavController(LocalContext.current))
     }
 }

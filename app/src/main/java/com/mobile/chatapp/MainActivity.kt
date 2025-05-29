@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.persentation.navigation.appnav.AppNavigation
+import com.mobile.chatapp.persentation.ui.screen.chat.ChatScreen
 import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreen
 import com.mobile.chatapp.persentation.ui.screen.home.CollapsingTopAppBarScreen
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
@@ -34,10 +35,11 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-                    AppNavigation(navController)
+//                    AppNavigation(navController)
 //                    ProfileSetUp(navController,"","","")
 //                    ProfileScreen()
 //                    ProfileSetUp()
+                    ChatScreen()
                 }
             }
 
