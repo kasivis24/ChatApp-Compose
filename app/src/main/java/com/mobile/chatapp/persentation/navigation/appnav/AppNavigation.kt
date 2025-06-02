@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.chatapp.persentation.ui.screen.auth.login.LoginScreen
 import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
+import com.mobile.chatapp.persentation.ui.screen.chat.ChatScreen
 import com.mobile.chatapp.persentation.ui.screen.duo.search.SearchScreen
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
 import com.mobile.chatapp.persentation.ui.screen.settings.profilesetup.ProfileSetUp
@@ -34,6 +35,11 @@ fun AppNavigation(navHostController: NavHostController){
         composable(AppRoutes.REGISTER_SCREEN) {
             RegisterScreen(navHostController)
         }
+
+        composable(AppRoutes.CHAT_SCREEN) {
+            ChatScreen(navHostController)
+        }
+
 
         composable("${AppRoutes.PROFILESETUP_SCREEN}/{gmail}/{uId}/{refId}",
             arguments = listOf(

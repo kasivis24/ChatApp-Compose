@@ -35,11 +35,11 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-//                    AppNavigation(navController)
+                    AppNavigation(navController)
 //                    ProfileSetUp(navController,"","","")
 //                    ProfileScreen()
 //                    ProfileSetUp()
-                    ChatScreen()
+//                    ChatScreen()
                 }
             }
 

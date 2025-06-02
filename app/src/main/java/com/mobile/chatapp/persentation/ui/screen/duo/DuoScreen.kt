@@ -182,7 +182,9 @@ fun DuoScreen(
                 if (friendsData?.isNotEmpty() == true){
                     items(friendsData.orEmpty()) {friend ->
                         Log.d("LogData-Friend","Friend Data -> $friend")
-                        ChatItem(friend)
+                        ChatItem(friend, onClick = {
+                            navController.navigate(AppRoutes.CHAT_SCREEN)
+                        })
                     }
                 }
             }
@@ -191,14 +193,16 @@ fun DuoScreen(
 }
 
 @Composable
-fun ChatItem(friend: DuoFriendsData) {
+fun ChatItem(friend: DuoFriendsData, onClick: () -> Unit = {}) {
 
     Box(
         Modifier
             .fillMaxWidth()
             .height(70.dp)
             .padding(horizontal = 15.dp, vertical = 5.dp)
-
+            .clickable{
+                onClick()
+            }
     ) {
 
         Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
