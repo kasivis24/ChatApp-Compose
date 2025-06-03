@@ -51,8 +51,11 @@ import com.mobile.chatapp.persentation.ui.theme.zohoBold
 import com.mobile.chatapp.persentation.ui.theme.zohoLight
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.Card
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -284,6 +287,38 @@ fun MessageInputField(
         }
 
 
+    }
+}
+
+@Preview
+@Composable
+fun MsgYouPreview(){
+    AppTheme {
+        Card (shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp)){
+            Text("Hi Good Mornign ❤️❤️ ",
+                fontSize = 13.sp,
+                fontFamily = zohoRegular,
+                fontWeight = FontWeight.W500,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun MsgFrndPreview(){
+    AppTheme {
+        Card (shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp)){
+            Text("Hi Good Mornign ❤️❤️ ",
+                fontSize = 13.sp,
+                fontFamily = zohoRegular,
+                fontWeight = FontWeight.W500,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
     }
 }
 
