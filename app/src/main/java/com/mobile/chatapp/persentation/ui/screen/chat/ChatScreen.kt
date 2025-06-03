@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +57,7 @@ fun ChatScreen(navController: NavController){
         topBar = {
             TopAppBar(
                 windowInsets = TopAppBarDefaults.windowInsets,
-                modifier = Modifier.clickable(){
+                modifier = Modifier.clickable{
 
                 },
                 title = {
@@ -71,7 +73,7 @@ fun ChatScreen(navController: NavController){
 
                         }
                         Spacer(Modifier.width(10.dp))
-                        Column() {
+                        Column {
                             Text(
                                 text = "PersonName",
                                 style = TextStyle(
@@ -163,11 +165,9 @@ fun ChatScreen(navController: NavController){
                     singleLine = true,
                     maxLines = 1,
                     colors = OutlinedTextFieldDefaults.colors(
-//                            focusedContainerColor = Color.Gray.copy(alpha = 0.5f),
                         focusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-//                            disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
                         disabledBorderColor = Color.Gray.copy(alpha = 0.5f),
-//                            cursorColor = if (isDark) AppThemeColor else Color.Red,
+
                     ),
 
                     )
@@ -176,19 +176,53 @@ fun ChatScreen(navController: NavController){
     )
 }
 
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview
 @Composable
-fun ChatDarkScreen(){
+fun MsgYouPreview(){
     AppTheme {
-        ChatScreen(rememberNavController())
+        Card (shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp)){
+            Text("Hi Good Mornign ❤️❤️ ",
+                fontSize = 13.sp,
+                fontFamily = zohoRegular,
+                fontWeight = FontWeight.W500,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun ChatLightScreen(){
+fun MsgFrndPreview(){
     AppTheme {
-        ChatScreen(rememberNavController())
+        Card (shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp)){
+            Text("Hi Good Mornign ❤️❤️ ",
+                fontSize = 13.sp,
+                fontFamily = zohoRegular,
+                fontWeight = FontWeight.W500,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
     }
 }
+
+
+//
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatLightScreen(){
+//    AppTheme {
+//        ChatScreen(rememberNavController())
+//    }
+//}
+//
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//fun ChatDarkScreen(){
+//    AppTheme {
+//        ChatScreen(rememberNavController())
+//    }
+//}

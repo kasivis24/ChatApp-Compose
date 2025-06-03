@@ -1,16 +1,14 @@
 package com.mobile.chatapp.data.remote.db
-
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.dto.DuoRequestData
+import com.mobile.chatapp.data.dto.MessageData
 import com.mobile.chatapp.data.dto.ProfileData
-import com.mobile.chatapp.data.dto.RequestData
 import com.mobile.chatapp.data.dto.SearchData
 import com.mobile.chatapp.data.dto.UserData
 import com.mobile.chatapp.data.remote.state.DbEventState
-import kotlinx.coroutines.flow.StateFlow
 
 interface Database {
 
@@ -33,5 +31,7 @@ interface Database {
     suspend fun getMyFriends(uId : String) : LiveData<List<DuoFriendsData>>
 
     suspend fun uploadProfileImage(uri: Uri,onSuccessImage : (String)-> Unit) : String
+
+    suspend fun sendMessage(messageData: MessageData) : DbEventState
 
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.chatapp.data.dto.DuoFriendsData
+import com.mobile.chatapp.data.dto.MessageData
 import com.mobile.chatapp.data.remote.db.Database
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -22,5 +23,9 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
                 _friendProfiles.value = data
             }
         }
+    }
+
+    fun sendMessage(messageData: MessageData) {
+
     }
 }

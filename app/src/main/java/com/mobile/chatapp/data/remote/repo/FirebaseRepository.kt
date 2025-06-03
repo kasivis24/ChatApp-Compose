@@ -10,6 +10,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.dto.DuoRequestData
+import com.mobile.chatapp.data.dto.MessageData
 import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.dto.RequestData
 import com.mobile.chatapp.data.dto.SearchData
@@ -73,6 +74,8 @@ class FirebaseRepository : Database {
                     if (error != null){
                         return@addSnapshotListener
                     }
+
+
                     if (snapshotRequest != null){
                         val requests = snapshotRequest.documents.mapNotNull { it.toObject(RequestData::class.java) }
 
@@ -348,6 +351,17 @@ class FirebaseRepository : Database {
         }
     }
 
+    override suspend fun sendMessage(messageData: MessageData): DbEventState {
+        return try {
+            val ref = firebaseFireStore.collection("MessageData").document()
+            val id = ref.id
+            ref.set(MessageData(id,messageData.senderId,messageData.receiverId,messageData.msgContent,messageData.contentType,messageData.date,messageData.time)).await()
+            DbEventState.Success("Message Added Success")
+        }
+        catch (e : Exception){
+            DbEventState.Error("Something went wrong")
+        }
+    }
 
 
 }
