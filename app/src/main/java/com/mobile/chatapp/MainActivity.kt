@@ -1,5 +1,6 @@
 package com.mobile.chatapp
 
+import ChatScreenTest
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -16,7 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import com.mobile.chatapp.persentation.navigation.appnav.AppNavigation
 import com.mobile.chatapp.persentation.ui.screen.chat.ChatScreen
 import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreen
-import com.mobile.chatapp.persentation.ui.screen.home.CollapsingTopAppBarScreen
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
 import com.mobile.chatapp.persentation.ui.screen.settings.profilesetup.ProfileSetUp
@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
 //                    ProfileScreen()
 //                    ProfileSetUp()
 //                    ChatScreen()
+//                    ChatScreenTest()
                 }
             }
 
