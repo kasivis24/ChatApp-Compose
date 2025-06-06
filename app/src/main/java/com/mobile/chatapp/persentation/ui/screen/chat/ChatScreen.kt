@@ -99,11 +99,7 @@ fun ChatScreen(navController: NavController,receiverId : String,duoViewModel: Du
     val listState = rememberLazyListState()
 
 
-    val zoneId = TimeZone.getTimeZone("Asia/Kolkata").toZoneId()
-    val currentTime = rememberSaveable { ZonedDateTime.now(zoneId) }
 
-    val date = currentTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) // e.g., 22 May 2025
-    val time = currentTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -238,7 +234,7 @@ fun ChatScreen(navController: NavController,receiverId : String,duoViewModel: Du
                                             .padding(horizontal = 20.dp),
                                         contentAlignment = Alignment.CenterStart
                                     ) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+
                                     }
                                 },
                                 directions = setOf(DismissDirection.StartToEnd)
@@ -274,6 +270,11 @@ fun ChatScreen(navController: NavController,receiverId : String,duoViewModel: Du
                                 textState.value = it
                             },
                             onSendMsg = {
+                                val zoneId = TimeZone.getTimeZone("Asia/Kolkata").toZoneId()
+                                val currentTime =  ZonedDateTime.now(zoneId)
+
+                                val date = currentTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) // e.g., 22 May 2025
+                                val time = currentTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
                                 duoViewModel.sendMessage(MessageData("",authViewModel.getAuthToken(),receiverId,textState.value,"",date,time))
                                 textState.value = ""
                             },
@@ -457,7 +458,7 @@ fun MessageInputField(
 
 @Composable
 fun MsgYou(msgText: String,time : String) {
-    Card (modifier = Modifier.padding(top = 5.dp), shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)){
+    Card (modifier = Modifier.padding(top = 5.dp), shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.primaryContainer){
         Column (modifier = Modifier.padding(5.dp), horizontalAlignment = Alignment.End){
 
             Text("${msgText}",
