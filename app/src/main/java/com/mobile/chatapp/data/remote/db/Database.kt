@@ -34,4 +34,6 @@ interface Database {
 
     suspend fun sendMessage(messageData: MessageData) : DbEventState
 
+    suspend fun getDuoMessage(senderId: String,receiverId: String) : LiveData<List<MessageData>>
+
 }

@@ -1,4 +1,5 @@
 package com.mobile.chatapp.data.dto
+import com.google.firebase.Timestamp
 import com.mobile.chatapp.data.type.MessageType
 
 data class MessageData(
@@ -9,6 +10,7 @@ data class MessageData(
     val contentType : String = "",
     val date : String = "",
     val time : String = "",
+    val timeStamp : Timestamp? = null
 ){
     fun determineMsgType(): MessageType {
         return when {

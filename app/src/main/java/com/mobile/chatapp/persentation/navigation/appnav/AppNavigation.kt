@@ -36,8 +36,15 @@ fun AppNavigation(navHostController: NavHostController){
             RegisterScreen(navHostController)
         }
 
-        composable(AppRoutes.CHAT_SCREEN) {
-            ChatScreen(navHostController)
+        composable(
+            "${AppRoutes.CHAT_SCREEN}/{receiverId}",
+            arguments = listOf(
+                navArgument("receiverId"){
+                    type = NavType.StringType
+                }
+            )
+            ) {
+            ChatScreen(navHostController,it.arguments?.getString("receiverId") ?: "")
         }
 
 

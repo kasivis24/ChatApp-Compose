@@ -1,11 +1,15 @@
 package com.mobile.chatapp.data.remote.repo
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoFriendsData
@@ -18,6 +22,9 @@ import com.mobile.chatapp.data.dto.UserData
 import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.data.remote.state.DbEventState
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class FirebaseRepository : Database {
 
@@ -286,6 +293,7 @@ class FirebaseRepository : Database {
 
 
     override suspend fun getMyFriends(uId: String): LiveData<List<DuoFriendsData>> {
+
         val _myFriendsFlow = MutableLiveData<List<DuoFriendsData>>(emptyList())
         val tempFriendsList = mutableStateListOf<DuoFriendsData>()
         try {
@@ -355,12 +363,58 @@ class FirebaseRepository : Database {
         return try {
             val ref = firebaseFireStore.collection("MessageData").document()
             val id = ref.id
-            ref.set(MessageData(id,messageData.senderId,messageData.receiverId,messageData.msgContent,messageData.contentType,messageData.date,messageData.time)).await()
+
+            val data = hashMapOf(
+                "msgId" to id,
+                "senderId" to messageData.senderId,
+                "receiverId" to messageData.receiverId,
+                "msgContent" to messageData.msgContent,
+                "contentType" to messageData.contentType,
+                "date" to messageData.date,
+                "time" to messageData.time,
+                "timeStamp" to FieldValue.serverTimestamp()
+            )
+
+            ref.set(data).await()
             DbEventState.Success("Message Added Success")
         }
         catch (e : Exception){
             DbEventState.Error("Something went wrong")
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun getDuoMessage(senderId: String, receiverId: String): LiveData<List<MessageData>> {
+        val _myMessageData = MutableLiveData<List<MessageData>>(emptyList())
+
+        try {
+            firebaseFireStore
+                .collection("MessageData")
+                .orderBy("timeStamp",Query.Direction.DESCENDING)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null) {
+
+                        val msgDataList = snapshot.documents.mapNotNull { it.toObject(MessageData::class.java) }
+
+                        val tempMessageList = msgDataList.filter { msg ->
+                            (msg.senderId == senderId && msg.receiverId == receiverId) || (msg.senderId == receiverId && msg.receiverId == senderId)
+                        }
+
+
+
+                        Log.d("LogData", "Message Data -> $tempMessageList")
+                        _myMessageData.value = tempMessageList
+                    }
+                }
+        }
+        catch (e : Exception){
+            _myMessageData.value = emptyList()
+        }
+
+        return _myMessageData
     }
 
 

@@ -2,21 +2,26 @@ package com.mobile.chatapp.persentation.ui.screen.chat
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,18 +57,64 @@ import com.mobile.chatapp.persentation.ui.theme.zohoLight
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mobile.chatapp.data.dto.MessageData
+import com.mobile.chatapp.data.remote.db.Database
+import com.mobile.chatapp.data.remote.repo.FirebaseRepository
+import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
+import com.mobile.chatapp.persentation.ui.screen.duo.DuoViewModel
+import com.mobile.chatapp.persentation.ui.theme.zohoMedium
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ChatScreen(navController: NavController) {
-    val messageList = remember { List(20) { "Message $it" } }
+fun ChatScreen(navController: NavController,receiverId : String,duoViewModel: DuoViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel()) {
+
+
+    val messageDataList by duoViewModel.messageData.observeAsState()
+
     val textState = rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
+
+
+    val zoneId = TimeZone.getTimeZone("Asia/Kolkata").toZoneId()
+    val currentTime = rememberSaveable { ZonedDateTime.now(zoneId) }
+
+    val date = currentTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) // e.g., 22 May 2025
+    val time = currentTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+
+    val coroutineScope = rememberCoroutineScope()
+
+
+
+    LaunchedEffect (Unit){
+        coroutineScope.launch (Dispatchers.IO){
+            duoViewModel.getDuoMessages(authViewModel.getAuthToken(),receiverId)
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -82,9 +133,6 @@ fun ChatScreen(navController: NavController) {
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    modifier = Modifier.clickable() {
-
-                    },
                     title = {
                         Row(
 
@@ -166,6 +214,42 @@ fun ChatScreen(navController: NavController) {
                     reverseLayout = true
                 ) {
 
+                    messageDataList?.let {
+
+                        items(it){msgData->
+
+                            val dismissState = rememberDismissState(
+                                confirmStateChange = {
+                                    if (it == DismissValue.DismissedToEnd) {
+                                        duoViewModel.changeTextFieldType(true)
+                                        false
+                                    } else {
+                                        false
+                                    }
+                                }
+                            )
+
+                            SwipeToDismiss(
+                                state = dismissState,
+                                background = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(horizontal = 20.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+                                    }
+                                },
+                                directions = setOf(DismissDirection.StartToEnd)
+                            ){
+                                MessageLayout(msgData,authViewModel.getAuthToken())
+                            }
+
+
+                        }
+
+                    }
 
                 }
             },
@@ -185,43 +269,17 @@ fun ChatScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         MessageInputField(
-                            text = textState.value, onTextChange = {
+                            text = textState.value,
+                            onTextChange = {
                                 textState.value = it
                             },
+                            onSendMsg = {
+                                duoViewModel.sendMessage(MessageData("",authViewModel.getAuthToken(),receiverId,textState.value,"",date,time))
+                                textState.value = ""
+                            },
+                            duoViewModel
                         )
 
-//                        BasicTextField(
-//                            textStyle = TextStyle(
-//                                fontSize = 14.sp,
-//                                fontFamily = zohoRegular,
-//                                textAlign = TextAlign.Center,
-//                                ),
-//                            placeholder = {
-//                                Text(
-//                                    "Message",
-//                                    fontSize = 18.sp,
-//                                    fontFamily = zohoRegular,
-//                                    color = MaterialTheme.colorScheme.outline,
-//                                    textAlign = TextAlign.Center,
-//                                )
-//                            },
-//
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .height(45.dp),
-//                            value = "",
-//                            onValueChange = {
-////
-//                            },
-//                            shape = RoundedCornerShape(20.dp),
-//
-//                            colors = TextFieldDefaults.colors(
-//                                focusedIndicatorColor = Color.Transparent,
-//                                unfocusedIndicatorColor = Color.Transparent,
-//                                disabledIndicatorColor = Color.Transparent
-//                            )
-//
-//                        )
                     }
                 }
             }
@@ -229,41 +287,147 @@ fun ChatScreen(navController: NavController) {
     }
 }
 
+
+@Composable
+fun MessageLayout(messageData: MessageData,userId : String){
+
+    if (!messageData.senderId.equals(userId)){
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart){
+            MsgFrnd(messageData.msgContent,messageData.time)
+        }
+    }else {
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
+            MsgYou(messageData.msgContent,messageData.time)
+        }
+    }
+}
+
 @Composable
 fun MessageInputField(
     text: String,
     onTextChange: (String) -> Unit,
+    onSendMsg: ()-> Unit,
+    duoViewModel: DuoViewModel,
 ) {
+
+    val textFieldType by duoViewModel.textFieldType.collectAsStateWithLifecycle()
+
     Row(Modifier.fillMaxWidth()
-        .padding(bottom = 8.dp)) {
-        Box(
-            modifier = Modifier
-                .border(0.5.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),RoundedCornerShape(50.dp))
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.75f), RoundedCornerShape(50)) // Your dark rounded shape
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            if (text.isEmpty()) {
-                Text(
-                    text = "Message",
-                    fontSize = 18.sp,
-                    fontFamily = zohoRegular,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
+        .padding(bottom = 8.dp), verticalAlignment = Alignment.Bottom) {
+
+
+        if (textFieldType){
+
+            Card (Modifier.weight(1f), shape = RoundedCornerShape(15.dp)){
+
+                Column (Modifier.fillMaxWidth()){
+
+                    Box(Modifier.fillMaxWidth().background(color = Color.Transparent, shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))){
+                        Box(Modifier.fillMaxWidth().padding(7.dp).background(color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(10.dp))){
+
+
+                            Box(Modifier.fillMaxWidth().padding(7.dp), contentAlignment = Alignment.CenterEnd){
+                                Icon(modifier = Modifier.size(15.dp).clickable {
+                                    duoViewModel.changeTextFieldType(false)
+                                }, painter = painterResource(R.drawable.ic_cancel), contentDescription = "ic_cancel")
+                            }
+
+                            Column (Modifier.padding(7.dp)){
+                                Text("Siva Bro Androdd",
+                                    fontSize = 13.sp,
+                                    fontFamily = zohoMedium,
+                                    textAlign = TextAlign.Center,
+                                )
+                                Text("Hello from today, Good monining",
+                                    fontSize = 11.sp,
+                                    fontFamily = zohoRegular,
+                                    fontWeight = FontWeight.W500,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+//                    .border(0.5.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),RoundedCornerShape(50.dp))
+                            .fillMaxWidth()
+//                    .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.75f), RoundedCornerShape(50)) // Your dark rounded shape
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+
+                        Row {
+                            if (text.isEmpty()) {
+                                Text(
+                                    text = "Message",
+                                    fontSize = 18.sp,
+                                    fontFamily = zohoRegular,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+
+                            BasicTextField(
+                                value = text,
+                                onValueChange = onTextChange,
+                                singleLine = true,
+                                textStyle = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = zohoRegular,
+                                    color = MaterialTheme.colorScheme.onSurface),
+                                modifier = Modifier
+                                    .weight(1f)
+                            )
+
+                            Icon(painter = painterResource(R.drawable.baseline_attach_file_24), contentDescription = "Attach")
+                        }
+
+                    }
+                }
+
             }
 
-            BasicTextField(
-                value = text,
-                onValueChange = onTextChange,
-                singleLine = true,
-                textStyle = TextStyle(
-                    fontSize = 18.sp,
-                    fontFamily = zohoRegular,
-                    color = MaterialTheme.colorScheme.onSurface),
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+        }else {
+
+
+
+            Column (Modifier.weight(1f)){
+                Box(
+                    modifier = Modifier
+                        .border(0.5.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),RoundedCornerShape(50.dp))
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.75f), RoundedCornerShape(50)) // Your dark rounded shape
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+
+                    Row {
+                        if (text.isEmpty()) {
+                            Text(
+                                text = "Message",
+                                fontSize = 18.sp,
+                                fontFamily = zohoRegular,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+
+                        BasicTextField(
+                            value = text,
+                            onValueChange = onTextChange,
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = zohoRegular,
+                                color = MaterialTheme.colorScheme.onSurface),
+                            modifier = Modifier
+                                .weight(1f)
+                        )
+
+                        Icon(painter = painterResource(R.drawable.baseline_attach_file_24), contentDescription = "Attach")
+                    }
+
+                }
+            }
+
+
         }
 
         Spacer(modifier = Modifier.width(5.dp))
@@ -271,7 +435,7 @@ fun MessageInputField(
         IconButton(
             modifier = Modifier.size(50.dp),
             onClick = {
-
+                onSendMsg()
             },
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -290,51 +454,84 @@ fun MessageInputField(
     }
 }
 
-@Preview
+
 @Composable
-fun MsgYouPreview(){
-    AppTheme {
-        Card (shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp)){
-            Text("Hi Good Mornign ❤️❤️ ",
-                fontSize = 13.sp,
+fun MsgYou(msgText: String,time : String) {
+    Card (modifier = Modifier.padding(top = 5.dp), shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)){
+        Column (modifier = Modifier.padding(5.dp), horizontalAlignment = Alignment.End){
+
+            Text("${msgText}",
+                fontSize = 17.sp,
                 fontFamily = zohoRegular,
                 fontWeight = FontWeight.W500,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(10.dp)
+            )
+
+            Row (Modifier, verticalAlignment = Alignment.CenterVertically){
+                Text("${time}",
+                    fontSize = 9.sp,
+                    fontFamily = zohoLight,
+                    fontWeight = FontWeight.W600,
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(Modifier.width(2.dp))
+
+                Icon(modifier = Modifier.size(15.dp),painter = painterResource(R.drawable.ic_received), contentDescription = "ic_received")
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MsgFrnd(msgText : String,time: String){
+    Card (modifier = Modifier.padding(top = 5.dp), shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.surface){
+        Column (modifier = Modifier.padding(5.dp), horizontalAlignment = Alignment.Start){
+
+
+            Text("${msgText}",
+                fontSize = 15.sp,
+                fontFamily = zohoRegular,
+                fontWeight = FontWeight.W500,
+                textAlign = TextAlign.Center,
+            )
+
+            Text("${time}",
+                fontSize = 8.sp,
+                fontFamily = zohoLight,
+                fontWeight = FontWeight.W600,
+                textAlign = TextAlign.Center,
             )
         }
     }
 }
 
-@Preview
-@Composable
-fun MsgFrndPreview(){
-    AppTheme {
-        Card (shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp)){
-            Text("Hi Good Mornign ❤️❤️ ",
-                fontSize = 13.sp,
-                fontFamily = zohoRegular,
-                fontWeight = FontWeight.W500,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(10.dp)
-            )
-        }
-    }
-}
-
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ChatDarkScreen() {
-    AppTheme {
-        ChatScreen(rememberNavController())
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
-fun ChatLightScreen() {
+fun MsgFrndPreview(){
     AppTheme {
-        ChatScreen(rememberNavController())
+
+        val database = FirebaseRepository()
+        MessageInputField("", onTextChange = {}, onSendMsg = {}, duoViewModel = DuoViewModel(database))
+//        MsgYou("Helo today fun","1:45 PM")
     }
 }
+
+//
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//fun ChatDarkScreen() {
+//    AppTheme {
+//        ChatScreen(rememberNavController(),"")
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatLightScreen() {
+//    AppTheme {
+//        ChatScreen(rememberNavController(),"")
+//    }
+//}

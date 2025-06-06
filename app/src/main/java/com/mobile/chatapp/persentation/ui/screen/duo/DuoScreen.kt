@@ -183,7 +183,7 @@ fun DuoScreen(
                     items(friendsData.orEmpty()) {friend ->
                         Log.d("LogData-Friend","Friend Data -> $friend")
                         ChatItem(friend, onClick = {
-                            navController.navigate(AppRoutes.CHAT_SCREEN)
+                            navController.navigate("${AppRoutes.CHAT_SCREEN}/${friend.friendId}")
                         })
                     }
                 }
