@@ -1,6 +1,7 @@
 package com.mobile.chatapp.persentation.ui.screen.duo
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,6 +64,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
 import com.google.firebase.auth.FirebaseAuth
 import com.mobile.chatapp.data.dto.DuoFriendsData
+import com.mobile.chatapp.data.model.RouteChatData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -186,7 +188,9 @@ fun DuoScreen(
                     items(friendsData.orEmpty()) {friend ->
                         Log.d("LogData-Friend","Friend Data -> $friend")
                         ChatItem(friend, onClick = {
-                            navController.navigate("${AppRoutes.CHAT_SCREEN}/${friend.friendId}")
+                            val routeChatData = RouteChatData(friend.friendId,friend.friendName)
+                            navController.currentBackStackEntry?.savedStateHandle?.set("routeChatData", routeChatData)
+                            navController.navigate(AppRoutes.CHAT_SCREEN)
                         })
                     }
                 }
