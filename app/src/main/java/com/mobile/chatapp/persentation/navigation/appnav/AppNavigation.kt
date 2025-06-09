@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mobile.chatapp.persentation.ui.screen.auth.login.LoginScreen
 import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
@@ -25,7 +26,8 @@ fun AppNavigation(navHostController: NavHostController){
         }
 
         composable(AppRoutes.HOME_SCREEN) {
-            HomeScreen(navHostController)
+            val bottomNavController = rememberNavController()
+            HomeScreen(navHostController, bottomNavController)
         }
 
         composable(AppRoutes.LOGIN_SCREEN) {

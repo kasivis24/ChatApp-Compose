@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import com.mobile.chatapp.data.dto.ActiveUsersData
 import com.mobile.chatapp.data.dto.DuoChatData
 import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.dto.DuoRequestData
@@ -417,5 +418,69 @@ class FirebaseRepository : Database {
         return _myMessageData
     }
 
+    override suspend fun putActiveStatus(uId: String): DbEventState {
+        return try{
+            if(!isChatIdActive(uId)) {
+                Log.d("Online-Status:", "Not Added")
+                val ref = firebaseFireStore.collection("activeUsersData").document()
+                val refId = ref.id
+                val activeUsersData = ActiveUsersData(uId, "", refId)
+                ref.set(activeUsersData).await()
+                Log.d("Online-Status:", "Added successfully")
+                DbEventState.Success("Active Status Added Successfully")
+            } else {
+                Log.d("Online-Status:", "Already Added")
+                DbEventState.Success("Already Added")
+            }
+        }catch (e : Exception){
+            Log.d("Online-Status:","Added failed")
+            DbEventState.Error("Something went wrong")
+        }
+
+    }
+
+    override suspend fun removeActiveStatus(uId: String): DbEventState {
+        Log.d("Online-Status:","removeActiveStatus-called")
+        return try{
+            firebaseFireStore.collection("activeUsersData").whereEqualTo("userId",uId).addSnapshotListener {
+                snapshot, error ->
+                if (error != null){
+                    return@addSnapshotListener
+                }
+                snapshot?.documents?.forEach {
+                    it.reference.delete()
+                }
+            }
+            Log.d("Online-Status:","Removed successfully")
+            DbEventState.Success("Active Status Removed Successfully")
+        }catch (e : Exception){
+            Log.d("Online-Status:","Removing failed")
+            DbEventState.Error("Something went wrong")
+        }
+    }
+
+    override suspend fun changeCurrentChatId(
+        uId: String,
+        chatId: String,
+        refId: String
+    ): DbEventState {
+        return try{
+            val activeUsersData = ActiveUsersData(uId, chatId, refId)
+            firebaseFireStore.collection("activeUsersData").document(refId).set(activeUsersData).await()
+            DbEventState.Success("Active Status Changed Successfully")
+        }catch (e : Exception){
+            DbEventState.Error("Something went wrong")
+        }
+    }
+
+    override suspend fun isChatIdActive(chatId: String): Boolean {
+        return try {
+            val userData = firebaseFireStore.collection("activeUsersData").whereEqualTo("userId",chatId).get().await()
+            return userData.documents.isNotEmpty()
+        }
+        catch (e : Exception){
+            false
+        }
+    }
 
 }

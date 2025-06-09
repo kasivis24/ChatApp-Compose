@@ -36,4 +36,11 @@ interface Database {
 
     suspend fun getDuoMessage(senderId: String,receiverId: String) : LiveData<List<MessageData>>
 
+    suspend fun putActiveStatus(uId: String) : DbEventState
+
+    suspend fun removeActiveStatus(uId: String) : DbEventState
+
+    suspend fun changeCurrentChatId(uId: String, chatId : String, refId: String) : DbEventState
+
+    suspend fun isChatIdActive(chatId: String) : Boolean
 }

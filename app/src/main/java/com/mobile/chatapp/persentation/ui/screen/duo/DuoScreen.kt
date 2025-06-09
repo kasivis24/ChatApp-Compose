@@ -61,6 +61,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
+import com.google.firebase.auth.FirebaseAuth
 import com.mobile.chatapp.data.dto.DuoFriendsData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -71,18 +72,20 @@ fun DuoScreen(
     duoViewModel: DuoViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-
+    Log.d("Recompose","DuoScreen")
     val friendsData by duoViewModel.friendProfiles.observeAsState()
     val coroutineScope = rememberCoroutineScope()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_animation))
     val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
 
 
-    LaunchedEffect(Unit) {
-        coroutineScope.launch(Dispatchers.IO) {
-            duoViewModel.getFriendProfiles(authViewModel.getAuthToken())
-            Log.d("LogData", "Data from Ui -> $friendsData")
+    LaunchedEffect(key1 = true) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            duoViewModel.putActiveStatus(userId)
         }
+        duoViewModel.getFriendProfiles(authViewModel.getAuthToken())
+        Log.d("LogData", "Data from Ui -> $friendsData")
     }
 
     Scaffold(

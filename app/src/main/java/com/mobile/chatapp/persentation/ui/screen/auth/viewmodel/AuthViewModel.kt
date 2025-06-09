@@ -53,7 +53,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun getAuthToken() : String{
-        return authRepository.getAuthToken();
+        return authRepository.getAuthToken()
     }
 
     fun resetStateRegister() {
