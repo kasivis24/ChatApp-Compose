@@ -10,6 +10,9 @@ data class MessageData(
     val contentType : String = "",
     val date : String = "",
     val time : String = "",
+    val replyMsgId : String = "",
+    val replyToName : String = "",
+    val replyContent : String = "",
     val timeStamp : Timestamp? = null
 ){
     fun determineMsgType(): MessageType {

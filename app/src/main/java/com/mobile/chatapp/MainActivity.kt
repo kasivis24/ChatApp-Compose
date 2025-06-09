@@ -1,5 +1,4 @@
 package com.mobile.chatapp
-import MessageTail
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -34,13 +33,12 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-//                    AppNavigation(navController)
+                    AppNavigation(navController)
 ////                    ProfileSetUp(navController,"","","")
 ////                    ProfileScreen()
 ////                    ProfileSetUp()
 ////                    ChatScreen()
 ////                    ChatScreenTest()
-                    MessageTail("",true)
                 }
             }
 

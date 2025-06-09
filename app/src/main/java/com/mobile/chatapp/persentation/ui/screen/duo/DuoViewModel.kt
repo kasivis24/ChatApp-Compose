@@ -26,6 +26,15 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
     private val _isTextFieldType = MutableStateFlow(false)
     val textFieldType: StateFlow<Boolean> = _isTextFieldType
 
+    private val _replyToName = MutableStateFlow("")
+    val replyToName: StateFlow<String> = _replyToName
+
+    private val _replayContent = MutableStateFlow("")
+    val replayContent: StateFlow<String> = _replayContent
+
+    private val _replyMsgId = MutableStateFlow("")
+    val replyMsgId: StateFlow<String> = _replyMsgId
+
     fun getFriendProfiles(uId : String){
         viewModelScope.launch {
             database.getMyFriends(uId).observeForever { data ->
@@ -39,9 +48,32 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
         Log.d("LogData","Check -> ${textFieldType.value}")
     }
 
+    fun setReplyContents(name : String, msgContent : String, msgId : String){
+        Log.d("LodData","name -> $name msgContent -> $msgContent")
+        _replyToName.value = name
+        _replayContent.value = msgContent
+        _replyMsgId.value = msgId
+    }
+
     fun sendMessage(messageData: MessageData) {
+
+        Log.d("LogData","keyboard state -> ${textFieldType.value}")
         viewModelScope.launch {
-            database.sendMessage(messageData)
+            database.sendMessage(
+                MessageData(
+                messageData.msgId,
+                messageData.senderId,
+                messageData.receiverId,
+                messageData.msgContent,
+                messageData.contentType,
+                messageData.date,
+                messageData.time,
+                if (textFieldType.value) replyMsgId.value else "",
+                if (textFieldType.value) replyToName.value else "",
+                if (textFieldType.value) replayContent.value else "",
+                messageData.timeStamp
+            ),
+            )
         }
     }
 

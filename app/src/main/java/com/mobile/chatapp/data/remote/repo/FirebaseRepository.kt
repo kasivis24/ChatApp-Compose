@@ -372,6 +372,9 @@ class FirebaseRepository : Database {
                 "contentType" to messageData.contentType,
                 "date" to messageData.date,
                 "time" to messageData.time,
+                "replyMsgId" to messageData.replyMsgId,
+                "replyToName" to messageData.replyToName,
+                "replyContent" to messageData.replyContent,
                 "timeStamp" to FieldValue.serverTimestamp()
             )
 
