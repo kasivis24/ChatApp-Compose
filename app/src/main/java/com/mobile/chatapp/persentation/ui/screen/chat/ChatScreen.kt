@@ -476,9 +476,7 @@ fun MessageInputField(
         IconButton(
             modifier = Modifier.size(50.dp),
             onClick = {
-                if (text.isNotEmpty()){
-                    onSendMsg()
-                }
+                onSendMsg()
             },
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -489,18 +487,7 @@ fun MessageInputField(
                 painter = painterResource(if (text.isEmpty()) R.drawable.baseline_mic_24 else R.drawable.ic_send),
                 contentDescription = "Send",
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(26.dp).pointerInput(Unit){
-                    detectTapGestures(
-                        onLongPress = {
-                            Log.d("LogData","Recoreded Long press")
-                            onRecordingStart()
-                        },
-                        onPress = {
-                            val press = tryAwaitRelease()
-                            if (press) onRecordingStop()
-                        }
-                    )
-                },
+                modifier = Modifier.size(26.dp)
             )
         }
 
