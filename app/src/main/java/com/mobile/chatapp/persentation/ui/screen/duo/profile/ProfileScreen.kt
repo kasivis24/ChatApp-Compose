@@ -1,6 +1,10 @@
 package com.mobile.chatapp.persentation.ui.screen.duo.profile
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,10 +13,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,24 +36,18 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,19 +56,28 @@ import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import com.mobile.chatapp.persentation.ui.theme.zohoBold
 import com.mobile.chatapp.persentation.ui.theme.zohoMedium
 import com.mobile.chatapp.persentation.ui.theme.zohoRegular
-import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.mobile.chatapp.data.model.RouteChatData
+import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.persentation.ui.theme.zohoLight
 import com.mobile.chatapp.persentation.ui.theme.zohoSemiBold
 
@@ -103,10 +108,15 @@ val scheduledMessages = listOf(
     ScheduledMessage("You: Hey, Gwen!", "26-05-2026", "01:30 PM"),
 )
 
-
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    navHostController: NavHostController,
+    routeChatData: RouteChatData,
+    profileScreenViewModel: ProfileScreenViewModel = hiltViewModel()
+) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val lazyListState = rememberLazyListState()
     val appName = stringResource(R.string.app_name)
@@ -116,6 +126,18 @@ fun ProfileScreen() {
     val bottomSheetForScheduledMessage = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
+
+    val profileData by profileScreenViewModel.profileData.observeAsState()
+    LaunchedEffect(key1 = true) {
+        profileScreenViewModel.getProfileData(routeChatData.receiverId)
+
+    }
+
+//    var name = profileData?.name ?: ""
+//    val email = profileData?.mail ?: ""
+//    val profileUrl = profileData?.imageUrl ?: ""
+//    val bio = profileData?.bio ?: ""
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -125,18 +147,31 @@ fun ProfileScreen() {
                 title = {
                     if (collapsedFraction > 0f) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.drawable.icon_profile),
-                                contentDescription = "Profile Small",
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .placeholder(R.drawable.icon_profile)
+                                    .data(profileData?.imageUrl)
+                                    .error(R.drawable.icon_profile)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Profile",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(40.dp)
-                                    .border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.onSurface,
+                                        CircleShape
+                                    )
                                     .clip(CircleShape)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "UserName", fontSize = 18.sp,
+                                text = if (profileData?.name?.isEmpty() == true)
+                                    profileData!!.mail.split("@")[0]
+                                else profileData?.name
+                                    ?: "Person",
+                                fontSize = 18.sp,
                                 style = TextStyle(fontFamily = zohoBold),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.padding(start = 10.dp),
@@ -265,21 +300,30 @@ fun ProfileScreen() {
                                     .padding(top = 0.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(
-                                    painter = painterResource(R.drawable.icon_profile),
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .placeholder(R.drawable.icon_profile)
+                                        .data(profileData?.imageUrl)
+                                        .error(R.drawable.icon_profile)
+                                        .crossfade(true)
+                                        .build(),
                                     contentDescription = "Profile",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(120.dp)
                                         .border(
-                                            2.dp,
+                                            1.dp,
                                             MaterialTheme.colorScheme.onSurface,
                                             CircleShape
                                         )
                                         .clip(CircleShape)
                                 )
+
                                 Text(
-                                    text = "User Name",
+                                    text = if (profileData?.name?.isEmpty() == true)
+                                        profileData!!.mail.split("@")[0]
+                                    else profileData?.name
+                                        ?: "Person",
                                     fontSize = 20.sp,
                                     style = TextStyle(fontFamily = zohoMedium),
                                     color = MaterialTheme.colorScheme.onSurface,
@@ -359,7 +403,10 @@ fun ProfileScreen() {
                                     fontSize = 18.sp,
                                 )
                                 Text(
-                                    text = "I'm Using $appName",
+                                    text = if (profileData?.bio?.isEmpty() == true)
+                                        "I am using ${appName}"
+                                    else profileData?.bio
+                                        ?: "$appName",
                                     style = TextStyle(fontFamily = zohoMedium),
                                     color = colorResource(R.color.card_text_color),
                                     fontSize = 18.sp,
@@ -375,7 +422,10 @@ fun ProfileScreen() {
                                     modifier = Modifier.padding(top = 15.dp)
                                 )
                                 Text(
-                                    text = "@aavf_goqejp44",
+                                    text = if (profileData?.mail?.isEmpty() == true)
+                                        "$appName@gmail.com"
+                                    else profileData?.mail
+                                        ?: "$appName@gmail.com",
                                     style = TextStyle(fontFamily = zohoMedium),
                                     color = colorResource(R.color.card_text_color),
                                     fontSize = 18.sp,
@@ -399,7 +449,7 @@ fun ProfileScreen() {
                         ) {
 
                             LazyVerticalGrid(
-                                columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2),
+                                columns = GridCells.Fixed(2),
                                 modifier = Modifier
                                     .padding(20.dp)
                                     .heightIn(max = 250.dp),
@@ -578,18 +628,30 @@ fun ProfileScreen() {
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreviewLight() {
     AppTheme {
-        ProfileScreen()
+        ProfileScreen(
+            rememberNavController(), routeChatData = RouteChatData("", ""),
+            ProfileScreenViewModel(
+                database = TODO()
+            )
+        )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ProfileScreenPreviewDark() {
     AppTheme {
-        ProfileScreen()
+        ProfileScreen(
+            rememberNavController(), routeChatData = RouteChatData("", ""),
+            ProfileScreenViewModel(
+                database = TODO()
+            )
+        )
     }
 }

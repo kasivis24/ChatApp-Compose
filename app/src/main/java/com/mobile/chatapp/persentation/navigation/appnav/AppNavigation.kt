@@ -10,9 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mobile.chatapp.data.model.RouteChatData
+import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.persentation.ui.screen.auth.login.LoginScreen
 import com.mobile.chatapp.persentation.ui.screen.auth.register.RegisterScreen
 import com.mobile.chatapp.persentation.ui.screen.chat.ChatScreen
+import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreen
+import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreenViewModel
 import com.mobile.chatapp.persentation.ui.screen.duo.search.SearchScreen
 import com.mobile.chatapp.persentation.ui.screen.home.HomeScreen
 import com.mobile.chatapp.persentation.ui.screen.settings.profilesetup.ProfileSetUp
@@ -76,5 +79,19 @@ fun AppNavigation(navHostController: NavHostController){
             SearchScreen(navHostController)
         }
 
+        composable(AppRoutes.PROFILE_SCREEN) { backStackEntry ->
+            val routeChatData = remember {
+                navHostController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<RouteChatData>("routeChatData")
+            }
+
+            routeChatData?.let {
+                ProfileScreen(
+                    navHostController = navHostController,
+                    routeChatData = it,
+                )
+            }
+        }
     }
 }

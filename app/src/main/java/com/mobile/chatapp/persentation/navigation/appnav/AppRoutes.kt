@@ -8,4 +8,5 @@ object AppRoutes {
     const val PROFILESETUP_SCREEN = "profilesetup_screen"
     const val SEARCH_SCREEN = "search_screen"
     const val CHAT_SCREEN = "chat_screen"
+    const val PROFILE_SCREEN = "profile_screen"
 }

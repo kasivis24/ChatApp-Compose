@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.dto.MessageData
+import com.mobile.chatapp.data.dto.ProfileData
 import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.data.remote.state.DbEventState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +39,9 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
 
     private val _isUserUidState = MutableStateFlow<DbEventState>(DbEventState.Idle)
     val isUserUidState : StateFlow<DbEventState> = _isUserUidState
+
+    private val _profileData = MutableLiveData<ProfileData>()
+    val profileData: MutableLiveData<ProfileData> = _profileData
 
     fun getFriendProfiles(uId : String){
         viewModelScope.launch {
@@ -93,6 +97,14 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
         _isUserUidState.value = DbEventState.Loading
         viewModelScope.launch {
             _isUserUidState.value = database.putActiveStatus(uId)
+        }
+    }
+
+    fun getProfileData(uId : String){
+        viewModelScope.launch {
+            database.getProfileData(uId).observeForever {
+                _profileData.value = it
+            }
         }
     }
 }
