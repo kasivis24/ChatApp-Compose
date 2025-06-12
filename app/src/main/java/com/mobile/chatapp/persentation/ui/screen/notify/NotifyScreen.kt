@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.icons.Icons
@@ -48,8 +50,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -62,6 +67,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -268,11 +275,23 @@ fun RequestCard(profileData: DuoRequestData,onDecline : (String)-> Unit,onAccept
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
-                    painter = painterResource(R.drawable.icon_profile),
-                    contentDescription = "profile_image",
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .placeholder(R.drawable.icon_profile)
+                        .data(profileData.imageUrl)
+                        .error(R.drawable.icon_profile)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Profile",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(70.dp),
+                        .size(70.dp)
+                        .border(
+                            0.dp,
+                            MaterialTheme.colorScheme.onSurface,
+                            CircleShape
+                        )
+                        .clip(CircleShape)
                 )
                 Column(
                     Modifier

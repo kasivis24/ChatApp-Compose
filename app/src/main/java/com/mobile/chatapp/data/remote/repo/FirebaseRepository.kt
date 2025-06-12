@@ -23,9 +23,6 @@ import com.mobile.chatapp.data.dto.UserData
 import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.data.remote.state.DbEventState
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 class FirebaseRepository : Database {
 
@@ -237,8 +234,8 @@ class FirebaseRepository : Database {
                                         request.forEach {requestDataForEach->
                                             requestProfiles.forEach {profileDataforEach->
                                                 if (requestDataForEach.senderId.equals(profileDataforEach.userId) && requestDataForEach.receiverId.equals(uId)){
-                                                    tempProfilesList.add(DuoRequestData(requestDataForEach.requestId,requestDataForEach.senderId,requestDataForEach.receiverId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time))
-                                                    Log.d("LogData","Data Notify list main -> ${DuoRequestData(requestDataForEach.requestId,requestDataForEach.senderId,requestDataForEach.receiverId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time)}")
+                                                    tempProfilesList.add(DuoRequestData(requestDataForEach.requestId,requestDataForEach.senderId,requestDataForEach.receiverId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time, profileDataforEach.imageUrl))
+                                                    Log.d("LogData","Data Notify list main -> ${DuoRequestData(requestDataForEach.requestId,requestDataForEach.senderId,requestDataForEach.receiverId,profileDataforEach.name,profileDataforEach.mail,requestDataForEach.day,requestDataForEach.date,requestDataForEach.time, profileDataforEach.imageUrl)}")
                                                 }
                                             }
                                         }
@@ -428,8 +425,11 @@ class FirebaseRepository : Database {
                 val ref = firebaseFireStore.collection("activeUsersData").document()
                 val refId = ref.id
                 val activeUsersData = ActiveUsersData(uId, "", refId)
-                ref.set(activeUsersData).await()
-                Log.d("Online-Status:", "Added successfully")
+                ref.set(activeUsersData).addOnSuccessListener {
+                    Log.d("Online-Status:", "Added successfully ${System.currentTimeMillis()}")
+                }.addOnFailureListener {
+                    Log.d("Online-Status:", "Added failed")
+                }
                 DbEventState.Success("Active Status Added Successfully")
             } else {
                 Log.d("Online-Status:", "Already Added")
@@ -486,4 +486,25 @@ class FirebaseRepository : Database {
         }
     }
 
+    override suspend fun getProfileData(uId: String): LiveData<ProfileData?> {
+        val _profileData = MutableLiveData<ProfileData?>()
+        try {
+            firebaseFireStore.collection("profileData").whereEqualTo("userId",uId)
+                .addSnapshotListener{
+                    snapshot,error->
+                    if (error != null){
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null){
+                        val profileData = snapshot.documents.mapNotNull { it.toObject(ProfileData::class.java) }
+                        Log.d("getProfileData:-","${profileData[0]}")
+                        _profileData.value = profileData[0]
+                    }
+                }
+        }catch (e: Exception){
+            _profileData.value = null
+        }
+        Log.d("getProfileData:","${_profileData.value}")
+        return _profileData
+    }
 }

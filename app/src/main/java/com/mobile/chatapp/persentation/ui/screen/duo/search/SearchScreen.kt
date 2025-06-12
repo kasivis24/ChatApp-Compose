@@ -51,7 +51,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -65,6 +67,8 @@ import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -213,7 +217,24 @@ fun ProfileItem(profileData: SearchData,onClick: (String)-> Unit,notifyViewModel
                 .clip(CircleShape)
                 .background(color = MaterialTheme.colorScheme.onSurface)
                 ){
-
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .placeholder(R.drawable.icon_profile)
+                        .data(profileData.imageUrl)
+                        .error(R.drawable.icon_profile)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Profile",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.onSurface,
+                            CircleShape
+                        )
+                        .clip(CircleShape)
+                )
             }
 
             Box(Modifier.fillMaxSize().padding(horizontal = 15.dp)){

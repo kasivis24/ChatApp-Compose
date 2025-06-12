@@ -3,7 +3,9 @@ package com.mobile.chatapp.persentation.ui.screen.duo
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +64,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.mobile.chatapp.data.dto.DuoFriendsData
 import com.mobile.chatapp.data.model.RouteChatData
@@ -218,9 +224,25 @@ fun ChatItem(friend: DuoFriendsData, onClick: () -> Unit = {}) {
                 Modifier
                     .size(55.dp)
                     .clip(CircleShape)
-                    .background(color = MaterialTheme.colorScheme.onSurface)
             ) {
-
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .placeholder(R.drawable.icon_profile)
+                        .data(friend.imgUrl)
+                        .error(R.drawable.icon_profile)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Profile",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(
+                            0.dp,
+                            MaterialTheme.colorScheme.onSurface,
+                            CircleShape
+                        )
+                        .clip(CircleShape)
+                )
             }
             Column(
                 Modifier.fillMaxSize()

@@ -9,4 +9,5 @@ data class DuoRequestData(
     val day : String = "",
     val date : String = "",
     val time : String = "",
+    val imageUrl : String = ""
 )
