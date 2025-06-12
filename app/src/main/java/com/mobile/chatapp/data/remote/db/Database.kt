@@ -42,5 +42,5 @@ interface Database {
 
     suspend fun changeCurrentChatId(uId: String, chatId : String, refId: String) : DbEventState
 
-    suspend fun isChatIdActive(chatId: String) : Boolean
+    suspend fun isChatIdActive(uId: String) : Boolean
 }

@@ -498,7 +498,7 @@ fun MessageInputField(
 
 @Composable
 fun MsgYou(messageData: MessageData) {
-    Card (modifier = Modifier.padding(top = 5.dp), shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.primaryContainer){
+    Card (modifier = Modifier.padding(top = 5.dp, start = 30.dp), shape = RoundedCornerShape(topStart = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.primaryContainer){
         Column (modifier = Modifier.padding(5.dp), horizontalAlignment = Alignment.End){
 
             if (messageData.replyMsgId.isNotEmpty()) {
@@ -510,20 +510,17 @@ fun MsgYou(messageData: MessageData) {
                             shape = RoundedCornerShape(5.dp)
                         )
                 ) {
-
                     Column(Modifier.padding(5.dp)) {
                         Text(
                             "${messageData.replyToName}",
                             fontSize = 13.sp,
                             fontFamily = zohoMedium,
-                            textAlign = TextAlign.Center,
                         )
                         Text(
                             "${messageData.replyContent}",
                             fontSize = 11.sp,
                             fontFamily = zohoRegular,
                             fontWeight = FontWeight.W500,
-                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -534,7 +531,6 @@ fun MsgYou(messageData: MessageData) {
                 fontSize = 17.sp,
                 fontFamily = zohoRegular,
                 fontWeight = FontWeight.W500,
-                textAlign = TextAlign.Center,
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -562,7 +558,7 @@ fun MsgYou(messageData: MessageData) {
 
 @Composable
 fun MsgFrnd(messageData: MessageData){
-    Card (modifier = Modifier.padding(top = 5.dp), shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.surface){
+    Card (modifier = Modifier.padding(top = 5.dp, end = 30.dp), shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.surface){
         Column (modifier = Modifier.padding(5.dp), horizontalAlignment = Alignment.Start){
 
 
@@ -581,14 +577,12 @@ fun MsgFrnd(messageData: MessageData){
                             "${messageData.replyToName}",
                             fontSize = 13.sp,
                             fontFamily = zohoMedium,
-                            textAlign = TextAlign.Center,
                         )
                         Text(
                             "${messageData.replyContent}",
                             fontSize = 11.sp,
                             fontFamily = zohoRegular,
                             fontWeight = FontWeight.W500,
-                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -598,14 +592,12 @@ fun MsgFrnd(messageData: MessageData){
                 fontSize = 17.sp,
                 fontFamily = zohoRegular,
                 fontWeight = FontWeight.W500,
-                textAlign = TextAlign.Center,
             )
 
             Text("${messageData.time}",
                 fontSize = 10.sp,
                 fontFamily = zohoLight,
                 fontWeight = FontWeight.W600,
-                textAlign = TextAlign.Center,
             )
         }
     }

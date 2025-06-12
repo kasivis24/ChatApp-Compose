@@ -424,26 +424,25 @@ class FirebaseRepository : Database {
     override suspend fun putActiveStatus(uId: String): DbEventState {
         return try{
             if(!isChatIdActive(uId)) {
-                Log.d("Online-Status:", "Not Added")
                 val ref = firebaseFireStore.collection("activeUsersData").document()
                 val refId = ref.id
                 val activeUsersData = ActiveUsersData(uId, "", refId)
                 ref.set(activeUsersData).await()
-                Log.d("Online-Status:", "Added successfully")
+                Log.d("LogData", "Added successfully")
                 DbEventState.Success("Active Status Added Successfully")
             } else {
-                Log.d("Online-Status:", "Already Added")
+                Log.d("LogData", "Already Added")
                 DbEventState.Success("Already Added")
             }
         }catch (e : Exception){
-            Log.d("Online-Status:","Added failed")
+            Log.d("LogData","Added failed")
             DbEventState.Error("Something went wrong")
         }
 
     }
 
     override suspend fun removeActiveStatus(uId: String): DbEventState {
-        Log.d("Online-Status:","removeActiveStatus-called")
+        Log.d("LogData","removeActiveStatus-called")
         return try{
             firebaseFireStore.collection("activeUsersData").whereEqualTo("userId",uId).addSnapshotListener {
                 snapshot, error ->
@@ -454,10 +453,10 @@ class FirebaseRepository : Database {
                     it.reference.delete()
                 }
             }
-            Log.d("Online-Status:","Removed successfully")
+            Log.d("LogData","Removed successfully")
             DbEventState.Success("Active Status Removed Successfully")
         }catch (e : Exception){
-            Log.d("Online-Status:","Removing failed")
+            Log.d("LogData","Removing failed")
             DbEventState.Error("Something went wrong")
         }
     }
@@ -476,9 +475,9 @@ class FirebaseRepository : Database {
         }
     }
 
-    override suspend fun isChatIdActive(chatId: String): Boolean {
+    override suspend fun isChatIdActive(uId: String): Boolean {
         return try {
-            val userData = firebaseFireStore.collection("activeUsersData").whereEqualTo("userId",chatId).get().await()
+            val userData = firebaseFireStore.collection("activeUsersData").whereEqualTo("userId",uId).get().await()
             return userData.documents.isNotEmpty()
         }
         catch (e : Exception){

@@ -55,50 +55,50 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d("Online-Cycle","Called Stop")
-//        lifecycleScope.launch (Dispatchers.IO){
-//            val userId = FirebaseAuth.getInstance().currentUser?.uid
-//            if (userId != null) {
-//                val result = firebaseRepo.removeActiveStatus(userId)
-//                when (result) {
-//                    is DbEventState.Success -> Log.d("onStop", result.message)
-//                    is DbEventState.Error -> Log.e("onStop", result.message)
-//                    else -> Unit
-//                }
-//            }
-//        }
-    }
-    @OptIn(DelicateCoroutinesApi::class)
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("Online-Cycle","Called Destroy")
-        GlobalScope.launch(Dispatchers.IO) {
+        Log.d("LogData","Called Stop")
+        lifecycleScope.launch (Dispatchers.IO){
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             if (userId != null) {
                 val result = firebaseRepo.removeActiveStatus(userId)
                 when (result) {
-                    is DbEventState.Success -> Log.d("onDestroy", result.message)
-                    is DbEventState.Error -> Log.e("onDestroy", result.message)
+                    is DbEventState.Success -> Log.d("onStop", result.message)
+                    is DbEventState.Error -> Log.e("onStop", result.message)
                     else -> Unit
                 }
             }
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("Online-Cycle","Called Start")
-//        lifecycleScope.launch(Dispatchers.IO) {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("LogData","Called Destroy")
+//        GlobalScope.launch(Dispatchers.IO) {
 //            val userId = FirebaseAuth.getInstance().currentUser?.uid
 //            if (userId != null) {
-//                val result = firebaseRepo.putActiveStatus(userId)
+//                val result = firebaseRepo.removeActiveStatus(userId)
 //                when (result) {
-//                    is DbEventState.Success -> Log.d("onStart", result.message)
-//                    is DbEventState.Error -> Log.e("onStart", result.message)
+//                    is DbEventState.Success -> Log.d("onDestroy", result.message)
+//                    is DbEventState.Error -> Log.e("onDestroy", result.message)
 //                    else -> Unit
 //                }
 //            }
 //        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("LogData","Called Start")
+        lifecycleScope.launch(Dispatchers.IO) {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null) {
+                val result = firebaseRepo.putActiveStatus(userId)
+                when (result) {
+                    is DbEventState.Success -> Log.d("onStart", result.message)
+                    is DbEventState.Error -> Log.e("onStart", result.message)
+                    else -> Unit
+                }
+            }
+        }
     }
 }
 
