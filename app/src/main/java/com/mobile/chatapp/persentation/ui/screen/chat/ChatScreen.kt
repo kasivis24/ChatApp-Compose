@@ -5,10 +5,15 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,17 +67,22 @@ import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
+import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -81,6 +92,7 @@ import com.mobile.chatapp.data.dto.MessageData
 import com.mobile.chatapp.data.model.RouteChatData
 import com.mobile.chatapp.data.remote.db.Database
 import com.mobile.chatapp.data.remote.repo.FirebaseRepository
+import com.mobile.chatapp.persentation.components.ShimmerText
 import com.mobile.chatapp.persentation.navigation.appnav.AppRoutes
 import com.mobile.chatapp.persentation.ui.screen.auth.viewmodel.AuthViewModel
 import com.mobile.chatapp.persentation.ui.screen.duo.DuoViewModel
@@ -90,12 +102,13 @@ import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.TimeZone
+import kotlin.math.max
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ChatScreen(navController: NavController,routeChatData: RouteChatData,duoViewModel: DuoViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel(),voiceRecorderViewModel: VoiceRecorderViewModel = viewModel()) {
+fun ChatScreen(navController: NavController,routeChatData: RouteChatData,duoViewModel: DuoViewModel = hiltViewModel(),authViewModel: AuthViewModel = hiltViewModel(),voiceRecorderViewModel: VoiceRecorderViewModel = hiltViewModel()) {
 
 
     val messageDataList by duoViewModel.messageData.observeAsState(emptyList())
@@ -105,6 +118,7 @@ fun ChatScreen(navController: NavController,routeChatData: RouteChatData,duoView
 
     val context = LocalContext.current
     val profileData by duoViewModel.profileData.observeAsState()
+
     LaunchedEffect (Unit){
         duoViewModel.getDuoMessages(authViewModel.getAuthToken(),routeChatData.receiverId)
         duoViewModel.getProfileData(routeChatData.receiverId)
@@ -260,7 +274,7 @@ fun ChatScreen(navController: NavController,routeChatData: RouteChatData,duoView
                                 },
                                 directions = setOf(DismissDirection.StartToEnd)
                             ){
-                                MessageLayout(msgData,authViewModel.getAuthToken())
+                                MessageLayout(msgData,authViewModel.getAuthToken(),routeChatData)
                             }
 
 
@@ -297,14 +311,15 @@ fun ChatScreen(navController: NavController,routeChatData: RouteChatData,duoView
                                 val time = currentTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
                                 duoViewModel.sendMessage(MessageData("",authViewModel.getAuthToken(),routeChatData.receiverId,textState.value,"",date,time))
                                 textState.value = ""
+                                duoViewModel.changeTextFieldType(false)
                             },
                             duoViewModel,
                             onRecordingStart = {
-                                voiceRecorderViewModel.startRecording(context)
+                                voiceRecorderViewModel.startRecording()
                             },
                             onRecordingStop = {
-                                val path = voiceRecorderViewModel.stopRecording()
-                                Toast.makeText(context, "Saved: $path", Toast.LENGTH_SHORT).show()
+                                voiceRecorderViewModel.stopRecording()
+                                voiceRecorderViewModel.playRecording()
                             }
                         )
 
@@ -317,11 +332,11 @@ fun ChatScreen(navController: NavController,routeChatData: RouteChatData,duoView
 
 
 @Composable
-fun MessageLayout(messageData: MessageData,userId : String){
+fun MessageLayout(messageData: MessageData,userId : String,routeChatData: RouteChatData){
 
     if (!messageData.senderId.equals(userId)){
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart){
-            MsgFrnd(messageData)
+            MsgFrnd(messageData, routeChatData)
         }
     }else {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
@@ -330,6 +345,7 @@ fun MessageLayout(messageData: MessageData,userId : String){
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageInputField(
     text: String,
@@ -345,6 +361,19 @@ fun MessageInputField(
     val replyToPersonName by duoViewModel.replyToName.collectAsStateWithLifecycle()
 
     val replyMsgContent by duoViewModel.replayContent.collectAsStateWithLifecycle()
+
+    val isRecorderOn by duoViewModel.isRecorderOn.collectAsStateWithLifecycle()
+
+
+    val scope = rememberCoroutineScope()
+    val offsetX = remember { Animatable(0f) }
+    val offsetY = remember { Animatable(0f) }
+
+    val maxDragX = -100f
+    val maxDragY = -25f
+
+    val coroutineScope = rememberCoroutineScope()
+
 
 
 
@@ -437,7 +466,7 @@ fun MessageInputField(
 
             }
 
-        }else {
+        } else {
 
 
 
@@ -454,32 +483,73 @@ fun MessageInputField(
                             MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.75f),
                             RoundedCornerShape(50)
                         ) // Your dark rounded shape
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    contentAlignment = Alignment.Center
                 ) {
 
-                    Row {
-                        if (text.isEmpty()) {
+                    if (isRecorderOn){
+
+                        Row (verticalAlignment = Alignment.CenterVertically){
+
+                            Icon(painter = painterResource(R.drawable.baseline_mic_24), tint = Color.Red, contentDescription = "Attach")
+
                             Text(
-                                text = "Message",
+                                text = "10:04",
                                 fontSize = 18.sp,
                                 fontFamily = zohoRegular,
                                 color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(horizontal = 5.dp)
                             )
+
+                            Spacer(Modifier.width(10.dp))
+
+                            Row (verticalAlignment = Alignment.CenterVertically){
+
+                                Icon(modifier = Modifier.size(18.dp), imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "Slide to cancel")
+
+                                Spacer(Modifier.width(2.dp))
+
+                                ShimmerText {
+                                    Text(
+                                        text = "Slide to cancel",
+                                        fontSize = 13.sp,
+                                        fontFamily = zohoRegular,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = TextStyle(
+                                            brush = it,
+                                        )
+                                    )
+                                }
+                            }
+
+
                         }
 
-                        BasicTextField(
-                            value = text,
-                            onValueChange = onTextChange,
-                            singleLine = true,
-                            textStyle = TextStyle(
-                                fontSize = 18.sp,
-                                fontFamily = zohoRegular,
-                                color = MaterialTheme.colorScheme.onSurface),
-                            modifier = Modifier
-                                .weight(1f)
-                        )
+                    } else {
+                        Row {
+                            if (text.isEmpty()) {
+                                Text(
+                                    text = "Message",
+                                    fontSize = 18.sp,
+                                    fontFamily = zohoRegular,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
 
-                        Icon(painter = painterResource(R.drawable.baseline_attach_file_24), contentDescription = "Attach")
+                            BasicTextField(
+                                value = text,
+                                onValueChange = onTextChange,
+                                singleLine = true,
+                                textStyle = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = zohoRegular,
+                                    color = MaterialTheme.colorScheme.onSurface),
+                                modifier = Modifier
+                                    .weight(1f)
+                            )
+
+                            Icon(painter = painterResource(R.drawable.baseline_attach_file_24), contentDescription = "Attach")
+                        }
                     }
 
                 }
@@ -490,23 +560,95 @@ fun MessageInputField(
 
         Spacer(modifier = Modifier.width(5.dp))
 
-        IconButton(
-            modifier = Modifier.size(50.dp),
-            onClick = {
-                onSendMsg()
-            },
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
 
-        ) {
-            Icon(
-                painter = painterResource(if (text.isEmpty()) R.drawable.baseline_mic_24 else R.drawable.ic_send),
-                contentDescription = "Send",
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(26.dp)
-            )
+        if (text.isEmpty()){
+            Box (
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(50.dp)
+                    .offset { IntOffset(offsetX.value.toInt(), offsetY.value.toInt()) }
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+                                duoViewModel.recorderStateChange(true)
+                                onRecordingStart()
+                            },
+                            onPress = { offset ->
+                                Log.d("LogData","Slide Press started at $offset")
+                                val success = tryAwaitRelease()
+                                if (success) {
+                                    Log.d("LogData","Slide Press released normally")
+                                } else {
+                                    Log.d("LogData","Slide Press Cancelled")
+                                }
+                            },
+                        )
+                    }
+                    .pointerInput(Unit) {
+
+
+
+                        detectDragGestures(
+
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                val (dx, dy) = dragAmount
+                                coroutineScope.launch {
+                                    if (dx < 0) {
+                                        offsetX.snapTo(max(offsetX.value + dx, maxDragX))
+                                    }
+                                    if (dy < 0) {
+                                        offsetY.snapTo(max(offsetY.value + dy, maxDragY))
+                                    }
+                                }
+                            },
+                            onDragEnd = {
+                                if (offsetX.value <= maxDragX) {
+                                    duoViewModel.recorderStateChange(false)
+                                    onRecordingStop()
+                                    Log.d("LogData","Slide left")
+                                }
+                                if (offsetY.value <= maxDragY) {
+                                    Log.d("LogData","Slide Right")
+                                    duoViewModel.recorderStateChange(true)
+                                }
+                                // Reset position
+                                scope.launch {
+                                    offsetX.animateTo(0f)
+                                    offsetY.animateTo(0f)
+                                }
+                            }
+                        )
+                    }
+                    .clip(CircleShape)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_mic_24),
+                    contentDescription = "Send",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+        }else {
+            IconButton(
+                modifier = Modifier.size(50.dp),
+                onClick = {
+                    onSendMsg()
+                },
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_send),
+                    contentDescription = "Send",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
         }
+
+
 
 
     }
@@ -574,7 +716,7 @@ fun MsgYou(messageData: MessageData) {
 
 
 @Composable
-fun MsgFrnd(messageData: MessageData){
+fun MsgFrnd(messageData: MessageData,routeChatData: RouteChatData){
     Card (modifier = Modifier.padding(top = 5.dp, end = 30.dp), shape = RoundedCornerShape(topEnd = 13.dp, bottomStart = 13.dp, bottomEnd = 13.dp), backgroundColor = MaterialTheme.colorScheme.surface){
         Column (modifier = Modifier.padding(5.dp), horizontalAlignment = Alignment.Start){
 
@@ -591,7 +733,7 @@ fun MsgFrnd(messageData: MessageData){
 
                     Column(Modifier.padding(5.dp)) {
                         Text(
-                            "${messageData.replyToName}",
+                            "${if (messageData.replyToName.equals("You")) routeChatData.chatUserName else messageData.replyToName}",
                             fontSize = 13.sp,
                             fontFamily = zohoMedium,
                         )

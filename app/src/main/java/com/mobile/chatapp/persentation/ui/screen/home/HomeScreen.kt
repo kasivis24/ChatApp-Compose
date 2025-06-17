@@ -1,10 +1,16 @@
 package com.mobile.chatapp.persentation.ui.screen.home
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,9 +29,21 @@ fun HomeScreen(
     navController: NavController,
     bottomNavController: NavHostController
 ) {
-    Log.d("Recompose", "HomeScreen")
 
-    Text("Home Screens ")
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Launch permission request when this screen is first shown
+    LaunchedEffect(Unit) {
+        launcher.launch(Manifest.permission.RECORD_AUDIO)
+    }
 
     Scaffold(
         bottomBar = {

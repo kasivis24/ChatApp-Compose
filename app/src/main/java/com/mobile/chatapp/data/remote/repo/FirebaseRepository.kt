@@ -293,7 +293,7 @@ class FirebaseRepository : Database {
     override suspend fun getMyFriends(uId: String): LiveData<List<DuoFriendsData>> {
 
         val _myFriendsFlow = MutableLiveData<List<DuoFriendsData>>(emptyList())
-        val tempFriendsList = mutableStateListOf<DuoFriendsData>()
+
         try {
             firebaseFireStore
                 .collection("duoChatData")
@@ -303,6 +303,8 @@ class FirebaseRepository : Database {
                         return@addSnapshotListener
                     }
                     if (snapshot != null) {
+
+                        val tempFriendsList = mutableStateListOf<DuoFriendsData>()
 
                         snapshot.documents.map {
                             val friendId = it.toObject(DuoChatData::class.java)?.friendId

@@ -20,6 +20,7 @@ import com.mobile.chatapp.data.remote.repo.FirebaseRepository
 import com.mobile.chatapp.data.remote.state.DbEventState
 import com.mobile.chatapp.persentation.navigation.appnav.AppNavigation
 import com.mobile.chatapp.persentation.ui.screen.duo.profile.ProfileScreen
+import com.mobile.chatapp.persentation.ui.screen.home.Check
 import com.mobile.chatapp.persentation.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -37,12 +38,14 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     AppNavigation(navController)
+//                    Check()
                 }
             }
 
@@ -51,18 +54,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d("LogData","Called Stop")
-        lifecycleScope.launch (Dispatchers.IO){
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
-            if (userId != null) {
-                val result = firebaseRepo.removeActiveStatus(userId)
-                when (result) {
-                    is DbEventState.Success -> Log.d("onStop", result.message)
-                    is DbEventState.Error -> Log.e("onStop", result.message)
-                    else -> Unit
-                }
-            }
-        }
+//        Log.d("LogData","Called Stop")
+//        lifecycleScope.launch (Dispatchers.IO){
+//            val userId = FirebaseAuth.getInstance().currentUser?.uid
+//            if (userId != null) {
+//                val result = firebaseRepo.removeActiveStatus(userId)
+//                when (result) {
+//                    is DbEventState.Success -> Log.d("onStop", result.message)
+//                    is DbEventState.Error -> Log.e("onStop", result.message)
+//                    else -> Unit
+//                }
+//            }
+//        }
     }
     @OptIn(DelicateCoroutinesApi::class)
     override fun onDestroy() {
@@ -83,18 +86,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.d("LogData","Called Start")
-        lifecycleScope.launch(Dispatchers.IO) {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
-            if (userId != null) {
-                val result = firebaseRepo.putActiveStatus(userId)
-                when (result) {
-                    is DbEventState.Success -> Log.d("onStart", result.message)
-                    is DbEventState.Error -> Log.e("onStart", result.message)
-                    else -> Unit
-                }
-            }
-        }
+//        Log.d("LogData","Called Start")
+//        lifecycleScope.launch(Dispatchers.IO) {
+//            val userId = FirebaseAuth.getInstance().currentUser?.uid
+//            if (userId != null) {
+//                val result = firebaseRepo.putActiveStatus(userId)
+//                when (result) {
+//                    is DbEventState.Success -> Log.d("onStart", result.message)
+//                    is DbEventState.Error -> Log.e("onStart", result.message)
+//                    else -> Unit
+//                }
+//            }
+//        }
     }
 }
 
@@ -104,6 +107,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     AppTheme {
-        ProfileScreen()
+//        ProfileScreen()
     }
 }

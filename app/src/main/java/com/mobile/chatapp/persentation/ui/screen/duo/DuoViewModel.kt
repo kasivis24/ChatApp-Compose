@@ -37,6 +37,9 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
     private val _replyMsgId = MutableStateFlow("")
     val replyMsgId: StateFlow<String> = _replyMsgId
 
+    private val _isRecorderOn = MutableStateFlow(false)
+    val isRecorderOn: StateFlow<Boolean> = _isRecorderOn
+
     private val _isUserUidState = MutableStateFlow<DbEventState>(DbEventState.Idle)
     val isUserUidState : StateFlow<DbEventState> = _isUserUidState
 
@@ -54,6 +57,10 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
     fun changeTextFieldType(value: Boolean){
         _isTextFieldType.value = value
         Log.d("LogData","Check -> ${textFieldType.value}")
+    }
+
+    fun recorderStateChange(state : Boolean){
+        _isRecorderOn.value = state
     }
 
     fun setReplyContents(name : String, msgContent : String, msgId : String){
@@ -80,8 +87,7 @@ class DuoViewModel @Inject constructor(private val database: Database): ViewMode
                 if (textFieldType.value) replyToName.value else "",
                 if (textFieldType.value) replayContent.value else "",
                 messageData.timeStamp
-            ),
-            )
+            ),)
         }
     }
 
